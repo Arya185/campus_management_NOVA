@@ -49,17 +49,6 @@ interface TodayClass {
   students: number
 }
 
-interface FoodOrder {
-  _id: string
-  orderId: string
-  canteenName: string
-  totalAmount: number
-  paymentStatus: string
-  status: string
-  createdAt: string
-  items: any[]
-}
-
 interface AttendanceStats {
   totalClasses: number
   classesToday: number
@@ -90,28 +79,6 @@ export default function TeacherDashboardPage() {
             schedule: []
         }
     ]
-    const demoFoodOrders: FoodOrder[] = [
-        {
-            _id: "demo-food-1",
-            orderId: "ORD-T1001",
-            canteenName: "Campus Cafe",
-            totalAmount: 155,
-            paymentStatus: "paid",
-            status: "completed",
-            createdAt: "2026-04-06T12:00:00.000Z",
-            items: [{ name: "Veg Meal" }]
-        },
-        {
-            _id: "demo-food-2",
-            orderId: "ORD-T1002",
-            canteenName: "Main Canteen",
-            totalAmount: 90,
-            paymentStatus: "paid",
-            status: "preparing",
-            createdAt: "2026-04-06T13:00:00.000Z",
-            items: [{ name: "Sandwich" }, { name: "Tea" }]
-        }
-    ]
     const demoTodayClasses: TodayClass[] = [
         { classroomId: "CS301", subject: "Data Structures", time: "9:00 AM", room: "Room 301", students: 48 },
         { classroomId: "CS305", subject: "Database Systems", time: "11:00 AM", room: "Room 205", students: 42 },
@@ -120,7 +87,6 @@ export default function TeacherDashboardPage() {
     const [loading, setLoading] = useState(false)
     const [classrooms, setClassrooms] = useState<Classroom[]>([])
     const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])
-    const [foodOrders, setFoodOrders] = useState<FoodOrder[]>([])
     const [attendanceStats, setAttendanceStats] = useState<AttendanceStats>({
         totalClasses: 5,
         classesToday: 2,
@@ -128,7 +94,6 @@ export default function TeacherDashboardPage() {
         attendanceRate: 93
     })
     const displayClassrooms = classrooms.length ? classrooms : demoClassrooms
-    const displayFoodOrders = foodOrders.length ? foodOrders : demoFoodOrders
     const displayTodayClasses = todayClasses.length ? todayClasses : demoTodayClasses
 
     useEffect(() => {
@@ -147,7 +112,6 @@ export default function TeacherDashboardPage() {
     useEffect(() => {
         if (currentUser) {
             fetchClassrooms()
-            fetchFoodOrders()
             fetchAttendanceStats()
             fetchTodaySchedule()
         }
@@ -165,19 +129,7 @@ export default function TeacherDashboardPage() {
         }
     }
 
-    const fetchFoodOrders = async () => {
-        try {
-            const response = await fetch(`/api/orders/user?userId=${currentUser._id || currentUser.id}&userType=teacher&limit=5`)
-            if (response.ok) {
-                const data = await response.json()
-                setFoodOrders(data.data || [])
-            }
-        } catch (error) {
-            console.error('Error fetching food orders:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
+
 
     const fetchAttendanceStats = async () => {
         try {
@@ -314,22 +266,7 @@ export default function TeacherDashboardPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Today's Schedule */}
                         <div className="lg:col-span-2">
-                            <Card className="bg-zinc-900/50 border-zinc-800 mb-8">
-                                <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-3 bg-[#e78a53]/10 rounded-lg">
-                                            <Car className="h-6 w-6 text-[#e78a53]" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-white font-semibold">Parking Allocation</h3>
-                                            <p className="text-zinc-400 text-sm">Request or review your teacher parking slot.</p>
-                                        </div>
-                                    </div>
-                                    <Link href="/teacher/parking">
-                                        <Button className="bg-[#e78a53] hover:bg-[#e78a53]/90">Go to Parking</Button>
-                                    </Link>
-                                </CardContent>
-                            </Card>
+
                             <Card className="bg-zinc-900/50 border-zinc-800">
                                 <CardHeader>
                                     <CardTitle className="text-white flex items-center gap-2">
@@ -463,74 +400,9 @@ export default function TeacherDashboardPage() {
                                             Manage Classes
                                         </Button>
                                     </Link>
-                                    <Link href="/teacher/food" className="block">
-                                        <Button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white justify-start">
-                                            <UtensilsCrossed className="h-4 w-4 mr-2" />
-                                            Order Food
-                                        </Button>
-                                    </Link>
                                 </CardContent>
                             </Card>
 
-                            {/* Recent Food Orders */}
-                            <Card className="bg-zinc-900/50 border-zinc-800">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2 text-lg">
-                                        <ShoppingBag className="h-5 w-5 text-[#e78a53]" />
-                                        Recent Orders
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {loading ? (
-                                        <div className="text-center py-4">
-                                            <Loader2 className="h-6 w-6 animate-spin text-[#e78a53] mx-auto" />
-                                        </div>
-                                    ) : displayFoodOrders.length === 0 ? (
-                                        <div className="text-center py-4">
-                                            <ShoppingBag className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-                                            <p className="text-zinc-400 text-sm">No recent orders</p>
-                                            <Link href="/teacher/food">
-                                                <Button variant="outline" size="sm" className="mt-3 border-zinc-700 text-zinc-400 hover:text-white">
-                                                    Order Now
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {displayFoodOrders.slice(0, 3).map((order) => (
-                                                <div key={order._id} className="p-3 bg-zinc-800/30 rounded-lg">
-                                                    <div className="flex items-center justify-between mb-1">
-                                                        <p className="text-white text-sm font-medium">{order.canteenName}</p>
-                                                        <Badge className={`text-xs ${
-                                                            order.status === 'completed' 
-                                                                ? 'bg-green-500/10 text-green-400 border-green-500/30'
-                                                                : order.status === 'preparing'
-                                                                ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                                                                : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'
-                                                        }`}>
-                                                            {order.status}
-                                                        </Badge>
-                                                    </div>
-                                                    <p className="text-zinc-500 text-xs">{order.items.length} items</p>
-                                                    <div className="flex items-center justify-between mt-2">
-                                                        <span className="text-[#e78a53] text-sm font-semibold">₹{order.totalAmount}</span>
-                                                        <span className="text-zinc-500 text-xs">
-                                                            {formatDate(order.createdAt)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {displayFoodOrders.length > 3 && (
-                                                <Link href="/teacher/food">
-                                                    <Button variant="outline" size="sm" className="w-full border-zinc-700 text-zinc-400 hover:text-white">
-                                                        View All Orders
-                                                    </Button>
-                                                </Link>
-                                            )}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
 
                             {/* Upcoming Deadlines */}
                             <Card className="bg-zinc-900/50 border-zinc-800">

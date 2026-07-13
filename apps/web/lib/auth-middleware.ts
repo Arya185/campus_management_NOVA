@@ -6,7 +6,7 @@ type AuthUser = {
   id: string
   email: string
   password: string
-  role: "student" | "teacher" | "canteen"
+  role: "student" | "teacher" | "admin"
   name: string
 }
  
@@ -26,11 +26,11 @@ const authUsers: AuthUser[] = [
     name: "Jane Doe",
   },
   {
-    id: "canteen1",
-    email: "canteen.manager@canteen.edu",
+    id: "admin1",
+    email: "admin@campus.edu",
     password: "Password@123",
-    role: "canteen",
-    name: "Canteen Manager",
+    role: "admin",
+    name: "Campus Admin",
   },
 ]
  

@@ -88,7 +88,7 @@ export default function Features() {
                   <h3 className="text-2xl leading-none font-semibold tracking-tight">Student Essentials</h3>
                   <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
                     <p className="max-w-[460px]">
-                      Timetables, event discovery, food ordering, resource booking, campus map and attendance — built for students.
+                      Timetables, event discovery, resource booking, and attendance — built for students.
                     </p>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function Features() {
 
                         {/* Right Column */}
                         <div className="flex flex-col gap-3">
-                          {["Food Ordering", "Navigation", "Attendance"].map((item, index) => (
+                          {["Classroom", "Mentorship", "Attendance"].map((item, index) => (
                             <motion.div
                               key={`right-${index}`}
                               className="bg-white rounded px-3 py-2 flex items-center gap-2 text-black text-sm font-medium shadow-sm"
@@ -214,8 +214,8 @@ export default function Features() {
                               whileHover={{ scale: 1.05 }}
                             >
                               <div className="w-4 h-4 flex items-center justify-center">
-                                {index === 0 && <span className="text-xs">🍔</span>}
-                                {index === 1 && <span className="text-xs">🗺️</span>}
+                                {index === 0 && <span className="text-xs">📚</span>}
+                                {index === 1 && <span className="text-xs">🤝</span>}
                                 {index === 2 && <span className="text-xs">✅</span>}
                               </div>
                               {item}
@@ -275,7 +275,7 @@ export default function Features() {
                 <div className="flex flex-col gap-4">
                   <h3 className="text-2xl leading-none font-semibold tracking-tight">Teacher Tools</h3>
                   <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
-                    <p className="max-w-[460px]">Timetables, attendance updates, and streamlined canteen ordering for faculty.</p>
+                    <p className="max-w-[460px]">Timetables, attendance updates, and streamlined classroom management for faculty.</p>
                   </div>
                 </div>
                 <div className="flex min-h-[300px] grow items-start justify-center select-none">
@@ -302,98 +302,7 @@ export default function Features() {
                 </div>
               </motion.div>
 
-              {/* Smart Components */}
-              <motion.div
-                className="group border-secondary/40 text-card-foreground relative col-span-12 flex flex-col overflow-hidden rounded-xl border-2 p-6 shadow-xl transition-all ease-in-out md:col-span-6 xl:col-span-6 xl:col-start-2"
-                onMouseEnter={() => setIsFeature3Hovering(true)}
-                onMouseLeave={() => setIsFeature3Hovering(false)}
-                initial={{ opacity: 0, y: 50 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-                transition={{ duration: 0.5, delay: 1.0 }}
-                whileHover={{
-                  scale: 1.02,
-                  borderColor: "rgba(231, 138, 83, 0.5)",
-                  boxShadow: "0 0 30px rgba(231, 138, 83, 0.2)",
-                }}
-                style={{ transition: "all 0s ease-in-out" }}
-              >
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-2xl leading-none font-semibold tracking-tight">Canteen & Queueing</h3>
-                  <div className="text-md text-muted-foreground flex flex-col gap-2 text-sm">
-                    <p className="max-w-[460px]">Stock management, current/previous orders, and queue-based pre-order scheduling.</p>
-                  </div>
-                </div>
-                <div className="flex grow items-center justify-center select-none relative min-h-[300px] p-4">
-                  <div className="w-full max-w-lg">
-                    <div className="relative rounded-2xl border border-white/10 bg-black/20 dark:bg-white/5 backdrop-blur-sm">
-                      <div className="p-4">
-                        <textarea
-                          className="w-full min-h-[100px] bg-transparent border-none text-white placeholder:text-white/50 resize-none focus:outline-none text-base leading-relaxed"
-                          placeholder="Search menu, events, rooms..."
-                          value={inputValue}
-                          onChange={(e) => setInputValue(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between px-4 pb-4">
-                        <div className="flex items-center gap-3">
-                          <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="text-white/70"
-                            >
-                              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-                            </svg>
-                          </button>
-                          <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#e78a53] hover:bg-[#e78a53]/90 transition-colors text-white font-medium">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
-                              <path d="M2 12h20"></path>
-                            </svg>
-                            Search Campus
-                          </button>
-                        </div>
-                        <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-white/70"
-                          >
-                            <path d="m22 2-7 20-4-9-9-4Z"></path>
-                            <path d="M22 2 11 13"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+
 
               {/* Dynamic Layouts */}
               <motion.div

@@ -22,7 +22,6 @@ const sidebarItems = [
   { title: 'Events',    href: '/admin/events',    icon: Calendar },
   { title: 'Resources', href: '/admin/resources', icon: BookOpen },
   { title: 'Internships', href: '/admin/internships', icon: Briefcase },
-  { title: 'Parking',  href: '/admin/parking',   icon: Car },
 ]
 
 export function AdminSidebar() {

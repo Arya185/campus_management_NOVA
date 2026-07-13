@@ -172,10 +172,6 @@ export default function AiMentor() {
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Mera last food order status kya hai?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
                             <span>"Available internships abhi kaun se hai?"</span>
                           </li>
                         </ul>

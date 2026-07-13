@@ -27,7 +27,6 @@ export default function AdminDashboard() {
     events: 0,
     resources: 0,
     internships: 0,
-    parkingRequests: 0,
     totalEntities: 0
   })
   const router = useRouter()
@@ -55,7 +54,6 @@ export default function AdminDashboard() {
       events: 12,
       resources: 25,
       internships: 8,
-      parkingRequests: 14,
       totalEntities: 59
     })
   }
@@ -104,13 +102,6 @@ export default function AdminDashboard() {
       icon: Briefcase,
       action: () => router.push('/admin/internships'),
       color: 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-    },
-    {
-      title: 'Manage Parking',
-      description: 'Approve and allocate parking slots',
-      icon: Car,
-      action: () => router.push('/admin/parking'),
-      color: 'bg-[#e78a53]/10 border-[#e78a53]/30 text-[#e78a53]'
     }
   ]
 
@@ -198,19 +189,6 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-zinc-900/50 border-zinc-800">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-yellow-500/10 rounded-lg">
-                    <Car className="h-6 w-6 text-yellow-400" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">{stats.parkingRequests}</p>
-                    <p className="text-zinc-400 text-sm">Parking Requests</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Quick Actions */}

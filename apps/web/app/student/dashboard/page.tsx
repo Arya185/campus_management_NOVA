@@ -56,10 +56,8 @@ const upcomingEvents = [
 ]
 
 const recentActivity = [
-  { icon: ShoppingBag, color: "text-[#e78a53]", bg: "bg-[#e78a53]/10", text: "Veg Thali ordered from Campus Cafe",    time: "1 hr ago"  },
   { icon: Calendar,    color: "text-blue-400",   bg: "bg-blue-500/10",  text: "Registered for AI/ML Workshop",         time: "3 hr ago"  },
   { icon: Briefcase,   color: "text-purple-400", bg: "bg-purple-500/10",text: "Applied to Frontend Intern at TechCorp", time: "Yesterday" },
-  { icon: Car,         color: "text-yellow-400", bg: "bg-yellow-500/10",text: "Parking slot A-B-031 requested",         time: "Yesterday" },
   { icon: BookOpen,    color: "text-green-400",  bg: "bg-green-500/10", text: "Downloaded DSA Notes from Dr. Mehta",    time: "2 days ago"},
 ]
 
@@ -148,7 +146,6 @@ export default function StudentDashboard() {
             <KPI icon={CheckCircle}  label="Avg Attendance"    value="87%"  sub="This semester"         trend="+5%"   up color="text-green-400"  bg="bg-green-500/10"  />
             <KPI icon={Calendar}     label="Events Registered" value={5}    sub="2 upcoming"             trend="+2"    up color="text-blue-400"   bg="bg-blue-500/10"   />
             <KPI icon={IndianRupee}  label="Fees Due"          value="₹50k" sub="Sem 7"                 trend="Action" up={false} color="text-red-400"   bg="bg-red-500/10"   />
-            <KPI icon={ShoppingBag}  label="Food Orders"       value={18}   sub="This month"             trend="+6"    up color="text-[#e78a53]"  bg="bg-[#e78a53]/10"  />
             <KPI icon={Briefcase}    label="Applications"      value={3}    sub="1 under review"         trend="+1"    up color="text-purple-400" bg="bg-purple-500/10" />
             <KPI icon={BookOpen}     label="Resources"         value={7}    sub="3 downloaded this week" trend="+3"    up color="text-teal-400"   bg="bg-teal-500/10"   />
           </div>

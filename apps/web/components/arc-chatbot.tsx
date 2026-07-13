@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, Send, Sparkles, Loader2 } from "lucide-react";
 
 interface Message { id: string; role: "user" | "ai"; content: string; source?: string; }
-interface ArcChatbotProps { userRole?: "student" | "teacher" | "canteen" | "admin"; timetable?: any; }
+interface ArcChatbotProps { userRole?: "student" | "teacher" | "admin"; timetable?: any; }
 
 export function ArcChatbot({ userRole = "student", timetable }: ArcChatbotProps) {
   const [open, setOpen] = useState(false);
@@ -30,10 +30,9 @@ export function ArcChatbot({ userRole = "student", timetable }: ArcChatbotProps)
 
   useEffect(() => {
     const roleGreetings: Record<string, string> = {
-      student: "timetable, attendance, canteen, events, or anything campus-related",
+      student: "timetable, attendance, events, or anything campus-related",
       teacher: "your classrooms, student attendance, timetables, or upcoming events",
-      canteen: "menu management, today's orders, stock levels, or demand forecasts",
-      admin: "campus events, internships, resources, parking, or platform analytics",
+      admin: "campus events, internships, resources, or platform analytics",
     };
     const topics = roleGreetings[userRole] ?? roleGreetings.student;
     const greeting = userName

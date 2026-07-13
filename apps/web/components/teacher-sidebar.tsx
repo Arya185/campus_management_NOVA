@@ -18,13 +18,11 @@ export function TeacherSidebar({ className = "" }: SidebarProps) {
         // { href: "/teacher/timetable", icon: Calendar, label: "Timetable" },
         { href: "/teacher/classroom", icon: UserCheck, label: "Classroom" },
         // { href: "/teacher/attendance-management", icon: UserCheck, label: "Attendance" },
-        { href: "/teacher/food", icon: UtensilsCrossed, label: "Food" },
         { href: "/teacher/classroom/attendance", icon: UserCheck, label: "Attendance" },
         { href: "/performance", icon: BarChart3, label: "Predict Student Performance" },
         { href: "/teacher/classroom/materials", icon: ClipboardList, label: "Tests & Exams" },
         { href: "/teacher/classroom/schedule", icon: ClipboardList, label: "Schedule" },
         { href: "/teacher/resources", icon: Upload, label: "Resources" },
-        { href: "/teacher/parking", icon: Car, label: "Parking" },
     ]
 
     return (
