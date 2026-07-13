@@ -171,32 +171,28 @@ async function runSeed() {
     process.exit(0);
   } catch (error: any) {
     console.error("Seed execution failed.");
-    let category = "UnknownError";
-    let detail = "";
-
-    if (error?.name === "MongoServerError" || error?.name === "MongooseError") {
-      category = "Database operation failure";
-      const errMsg = error.message || "";
-      if (errMsg.includes("ENOTFOUND") || errMsg.includes("ECONNREFUSED") || errMsg.includes("ETIMEOUT")) {
-        category = "DNS/network connectivity";
-        detail = "Could not resolve or connect to the database host.";
-      } else if (errMsg.includes("Authentication failed") || error.code === 8000) {
-        category = "Authentication failure";
-        detail = "Invalid database credentials.";
-      } else if (errMsg.includes("not authorized") || error.code === 13) {
-        category = "Authorization failure";
-        detail = "User lacks permission for this operation.";
-      } else if (error.code === 11000) {
-        category = "Duplicate key conflict";
-        detail = "A record with this unique identifier already exists.";
-      }
-    } else if (error?.name === "ValidationError") {
+    const name = error?.name || "UnknownError";
+    const code = error?.code;
+    
+    let category = "Unknown database error";
+    if (name === "MongoNetworkError" || name === "MongoNetworkTimeoutError" || code === "ENOTFOUND") {
+      category = "DNS/network connectivity";
+    } else if (name === "MongoServerError" && code === 8000) {
+      category = "Authentication failure";
+    } else if (name === "MongoServerError" && code === 13) {
+      category = "Authorization failure";
+    } else if (name === "ValidationError") {
       category = "Schema validation failure";
-      detail = "The seeded data does not match the Mongoose schema requirements.";
+    } else if (name === "MongoServerError" && code === 11000) {
+      category = "Duplicate key conflict";
+    } else if (name === "MongoServerError") {
+      category = "Database operation failure";
+    } else if (name === "MongooseError") {
+      category = "Configuration or connection lifecycle problem";
     }
 
-    console.error(`Error category: ${category}`);
-    if (detail) console.error(`Sanitized detail: ${detail}`);
+    console.error(`Sanitized failure category: ${category}`);
+    console.error(`Error Code: ${code || 'None'} | Name: ${name}`);
     process.exit(1);
   }
 }
