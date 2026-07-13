@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PERFORMANCE_PREDICTOR_API_URL=http://ml-api:5001
+    depends_on:
+      - ml-api
+    networks:
+      - app-network
+
+  ml-api:
+    build:
+      context: ./apps/ml-api
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
