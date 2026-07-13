@@ -169,9 +169,29 @@ async function runSeed() {
     console.log(`Verification counts: Student(${counts.student}), Timetable(${counts.timetable}), Attendance(${counts.attendance}), Assignments(${counts.assignments})`);
     
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Seed execution failed due to database connectivity or setup issue.");
-    console.error(`Error category: ${error instanceof Error ? error.name : 'UnknownError'}`);
+    
+    let category = "UnknownError";
+    if (error.name === "MongoServerError") {
+      if (error.code === 8000 || error.code === 18) {
+        category = "Authentication/Authorization Failure";
+      } else if (error.code === 11000) {
+        category = "Duplicate Key Conflict";
+      } else {
+        category = "Database Operation Failure";
+      }
+    } else if (error.name === "MongoNetworkError" || error.message?.includes("ENOTFOUND") || error.message?.includes("ECONNREFUSED")) {
+      category = "DNS/Network Connectivity";
+    } else if (error.name === "ValidationError") {
+      category = "Schema Validation Failure";
+    } else if (error.message?.includes("missing") || error.message?.includes("configuration")) {
+      category = "Configuration Missing";
+    } else if (error.name) {
+      category = error.name;
+    }
+
+    console.error(`Error category: ${category}`);
     process.exit(1);
   }
 }
