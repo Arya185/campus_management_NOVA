@@ -170,28 +170,33 @@ async function runSeed() {
     
     process.exit(0);
   } catch (error: any) {
-    console.error("Seed execution failed due to database connectivity or setup issue.");
-    
+    console.error("Seed execution failed.");
     let category = "UnknownError";
-    if (error.name === "MongoServerError") {
-      if (error.code === 8000 || error.code === 18) {
-        category = "Authentication/Authorization Failure";
+    let detail = "";
+
+    if (error?.name === "MongoServerError" || error?.name === "MongooseError") {
+      category = "Database operation failure";
+      const errMsg = error.message || "";
+      if (errMsg.includes("ENOTFOUND") || errMsg.includes("ECONNREFUSED") || errMsg.includes("ETIMEOUT")) {
+        category = "DNS/network connectivity";
+        detail = "Could not resolve or connect to the database host.";
+      } else if (errMsg.includes("Authentication failed") || error.code === 8000) {
+        category = "Authentication failure";
+        detail = "Invalid database credentials.";
+      } else if (errMsg.includes("not authorized") || error.code === 13) {
+        category = "Authorization failure";
+        detail = "User lacks permission for this operation.";
       } else if (error.code === 11000) {
-        category = "Duplicate Key Conflict";
-      } else {
-        category = "Database Operation Failure";
+        category = "Duplicate key conflict";
+        detail = "A record with this unique identifier already exists.";
       }
-    } else if (error.name === "MongoNetworkError" || error.message?.includes("ENOTFOUND") || error.message?.includes("ECONNREFUSED")) {
-      category = "DNS/Network Connectivity";
-    } else if (error.name === "ValidationError") {
-      category = "Schema Validation Failure";
-    } else if (error.message?.includes("missing") || error.message?.includes("configuration")) {
-      category = "Configuration Missing";
-    } else if (error.name) {
-      category = error.name;
+    } else if (error?.name === "ValidationError") {
+      category = "Schema validation failure";
+      detail = "The seeded data does not match the Mongoose schema requirements.";
     }
 
     console.error(`Error category: ${category}`);
+    if (detail) console.error(`Sanitized detail: ${detail}`);
     process.exit(1);
   }
 }
