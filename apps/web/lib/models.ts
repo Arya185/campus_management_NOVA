@@ -744,6 +744,71 @@ AnnouncementSchema.index({ category: 1, isActive: 1 });
 AnnouncementSchema.index({ createdAt: -1 });
 AnnouncementSchema.index({ priority: 1, isActive: 1 });
 
+// ── Agent Data Models (Phase 2A) ─────────────────────────────────────────────
+
+const StudyPlanSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    goal: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "completed"],
+      default: "pending",
+    },
+    sessions: [
+      {
+        title: { type: String, required: true },
+        date: { type: String, required: true }, // Format: YYYY-MM-DD
+        startTime: { type: String, required: true },
+        endTime: { type: String, required: true },
+        subject: { type: String },
+        topics: [{ type: String }],
+        status: {
+          type: String,
+          enum: ["planned", "completed", "skipped"],
+          default: "planned",
+        },
+      }
+    ],
+  },
+  { timestamps: true }
+);
+
+const AgentActionSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    actionType: { type: String, required: true }, // e.g., "create_plan", "reschedule"
+    summary: { type: String, required: true },
+    activityLog: [{ type: String }], // Tool usage summaries
+    rationale: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    planId: { type: Schema.Types.ObjectId, ref: "StudyPlan" }, // Reference to created plan if applicable
+  },
+  { timestamps: true }
+);
+
+const AssignmentSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    courseCode: { type: String, required: true },
+    title: { type: String, required: true },
+    description: { type: String },
+    dueDate: { type: Date, required: true },
+    status: { type: String, enum: ["pending", "submitted", "graded"], default: "pending" },
+    marks: { type: Number },
+  },
+  { timestamps: true }
+);
+
+// Indexes
+StudyPlanSchema.index({ studentId: 1, status: 1 });
+AgentActionSchema.index({ studentId: 1, status: 1 });
+AssignmentSchema.index({ studentId: 1, dueDate: 1 });
+
 // ── Export Models ──────────────────────────────────────────────────────────
 export const StudentFeesModel =
   models.StudentFees || model("StudentFees", StudentFeesSchema);
@@ -759,3 +824,12 @@ export const ExamResultModel =
 
 export const AnnouncementModel =
   models.Announcement || model("Announcement", AnnouncementSchema);
+
+if (models.StudyPlan) delete models.StudyPlan;
+export const StudyPlanModel = model("StudyPlan", StudyPlanSchema);
+
+if (models.AgentAction) delete models.AgentAction;
+export const AgentActionModel = model("AgentAction", AgentActionSchema);
+
+if (models.Assignment) delete models.Assignment;
+export const AssignmentModel = model("Assignment", AssignmentSchema);
