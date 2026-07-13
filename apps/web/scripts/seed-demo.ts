@@ -170,29 +170,30 @@ async function runSeed() {
     
     process.exit(0);
   } catch (error: any) {
-    console.error("Seed execution failed.");
-    const name = error?.name || "UnknownError";
-    const code = error?.code;
-    
-    let category = "Unknown database error";
-    if (name === "MongoNetworkError" || name === "MongoNetworkTimeoutError" || code === "ENOTFOUND") {
-      category = "DNS/network connectivity";
-    } else if (name === "MongoServerError" && code === 8000) {
-      category = "Authentication failure";
-    } else if (name === "MongoServerError" && code === 13) {
-      category = "Authorization failure";
-    } else if (name === "ValidationError") {
-      category = "Schema validation failure";
-    } else if (name === "MongoServerError" && code === 11000) {
-      category = "Duplicate key conflict";
-    } else if (name === "MongoServerError") {
-      category = "Database operation failure";
-    } else if (name === "MongooseError") {
-      category = "Configuration or connection lifecycle problem";
+    let category = "Unknown Database Error";
+
+    if (!process.env.MONGODB_URI) {
+      category = "Configuration Missing";
+    } else if (error.name === "MongoNetworkError" || error.name === "MongoServerSelectionError" || (error.message && (error.message.includes("ENOTFOUND") || error.message.includes("ECONNREFUSED") || error.message.includes("querySrv")))) {
+      category = "DNS/Network Connectivity";
+    } else if (error.name === "MongoServerError") {
+      if (error.code === 8000 || (error.message && (error.message.includes("bad auth") || error.message.includes("Authentication")))) {
+        category = "Authentication Failure";
+      } else if (error.code === 13 || (error.message && error.message.includes("not authorized"))) {
+        category = "Authorization Failure";
+      } else if (error.code === 11000) {
+        category = "Duplicate Key Conflict";
+      } else {
+        category = "Database Operation Failure";
+      }
+    } else if (error.name === "ValidationError") {
+      category = "Schema Validation Failure";
+    } else if (error.name === "MongoParseError") {
+      category = "Configuration Missing (Invalid URI format)";
     }
 
-    console.error(`Sanitized failure category: ${category}`);
-    console.error(`Error Code: ${code || 'None'} | Name: ${name}`);
+    console.error("Seed execution failed.");
+    console.error(`Sanitized Error Category: ${category}`);
     process.exit(1);
   }
 }
