@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "seed:demo": "npx tsx scripts/seed-demo.ts"
+    "seed:demo": "npx --yes tsx scripts/seed-demo.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
