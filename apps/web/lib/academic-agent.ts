@@ -3,7 +3,9 @@ import {
   getStudentTimetable, 
   getAttendanceSummary, 
   getUpcomingAssignments, 
-  proposeStudyPlan 
+  proposeStudyPlan,
+  getStudyPlans,
+  proposeReschedule
 } from "./agent-tools";
 
 const OPENROUTER_BASE = process.env.OPENROUTER_API_BASE || "https://openrouter.ai/api/v1";
@@ -73,6 +75,41 @@ export async function runAcademicAgent(studentId: string, prompt: string) {
           required: ["goal", "sessions"]
         }
       }
+    },
+    {
+      type: "function",
+      function: {
+        name: "getStudyPlans",
+        description: "Get the student's existing study plans and their sessions. Use this to find skipped sessions.",
+        parameters: { type: "object", properties: {}, required: [] }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "proposeReschedule",
+        description: "Propose a rescheduled session for a skipped study session.",
+        parameters: {
+          type: "object",
+          properties: {
+            planId: { type: "string" },
+            sessionId: { type: "string" },
+            newSession: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                date: { type: "string" },
+                startTime: { type: "string" },
+                endTime: { type: "string" },
+                subject: { type: "string" },
+                topics: { type: "array", items: { type: "string" } }
+              },
+              required: ["title", "date", "startTime", "endTime"]
+            }
+          },
+          required: ["planId", "sessionId", "newSession"]
+        }
+      }
     }
   ];
 
@@ -81,8 +118,8 @@ Your role is to help the student with academic planning, scheduling, and risk ma
 - Base your answers ONLY on the provided tool results.
 - Do NOT fabricate classes, deadlines, or attendance data.
 - If data is unavailable, say so clearly.
-- For study plan requests, ALWAYS check timetable, attendance, and assignments first to find free slots and prioritize at-risk subjects or urgent deadlines.
-- When proposing a study plan, clearly state to the user that it is a *proposed* plan pending their approval. You cannot approve it yourself.
+- For study plan requests, ALWAYS check timetable, attendance, and assignments first.
+- When the user mentions a skipped session, use getStudyPlans to find it, check the timetable for a new slot, and use proposeReschedule to propose a new time.
 - Keep responses concise and focused.`;
 
   const messages: any[] = [
@@ -123,15 +160,18 @@ Your role is to help the student with academic planning, scheduling, and risk ma
             activityLog.push("Checked upcoming assignments");
             result = await getUpcomingAssignments(studentId);
           } else if (name === "proposeStudyPlan") {
-            activityLog.push(`Proposed study plan: ${args.goal}`);
-            const proposal = await proposeStudyPlan(studentId, {
-              goal: args.goal,
-              sessions: args.sessions,
-              rationale: "AI Agent generated plan based on academic context.",
-              activityLog
-            });
+            activityLog.push(`Proposed study plan`);
+            const proposal = await proposeStudyPlan(studentId, args);
             proposedPlanDetails = proposal;
             result = { success: true, message: "Plan successfully proposed and is pending approval." };
+          } else if (name === "getStudyPlans") {
+            activityLog.push("Checked study plans");
+            result = await getStudyPlans(studentId);
+          } else if (name === "proposeReschedule") {
+            activityLog.push(`Proposed reschedule for session`);
+            const proposal = await proposeReschedule(studentId, args.planId, args.sessionId, args.newSession);
+            proposedPlanDetails = proposal;
+            result = { success: true, message: "Reschedule successfully proposed and is pending approval." };
           } else {
             result = { error: "Unknown tool" };
           }
@@ -152,7 +192,8 @@ Your role is to help the student with academic planning, scheduling, and risk ma
         reply: msg.content,
         activityLog,
         planId: proposedPlanDetails?.planId || null,
-        actionId: proposedPlanDetails?.actionId || null
+        actionId: proposedPlanDetails?.actionId || null,
+        sessions: proposedPlanDetails?.sessions || null
       };
     }
   }

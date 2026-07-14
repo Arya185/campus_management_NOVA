@@ -59,7 +59,7 @@ async function verify() {
     console.log("PASS: Initial statuses are pending.");
 
     // Resolve Action
-    await resolveAgentAction(proposal.actionId, "approved");
+    await resolveAgentAction(studentId, proposal.actionId, "approved");
     
     const finalAction = await AgentActionModel.findById(proposal.actionId);
     const finalPlan = await StudyPlanModel.findById(proposal.planId);

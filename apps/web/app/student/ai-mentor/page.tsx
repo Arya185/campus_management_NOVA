@@ -27,6 +27,7 @@ type Message = {
   planId?: string;
   actionId?: string;
   status?: "pending" | "approved" | "rejected";
+  sessions?: any[];
 };
 
 export default function AiMentor() {
@@ -78,6 +79,7 @@ export default function AiMentor() {
         activityLog: data.activityLog,
         planId: data.planId,
         actionId: data.actionId,
+        sessions: data.sessions,
         status: data.actionId ? "pending" : undefined
       }]);
     } catch (error: any) {
@@ -105,6 +107,30 @@ export default function AiMentor() {
       setMessages(prev => prev.map(msg => 
         msg.id === msgId ? { ...msg, status } : msg
       ));
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+    }
+  };
+
+  const handleSessionAction = async (planId: string, sessionId: string, action: "complete" | "skip", msgId: string, sessionIdx: number) => {
+    try {
+      const response = await fetch("/api/student/agent/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId, sessionId, action })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Failed to ${action} session`);
+
+      setMessages(prev => prev.map(msg => {
+        if (msg.id === msgId && msg.sessions) {
+          const newSessions = [...msg.sessions];
+          newSessions[sessionIdx] = { ...newSessions[sessionIdx], status: action === "complete" ? "completed" : "skipped" };
+          return { ...msg, sessions: newSessions };
+        }
+        return msg;
+      }));
     } catch (error: any) {
       alert(`Error: ${error.message}`);
     }
@@ -199,8 +225,35 @@ export default function AiMentor() {
                       </div>
                     )}
                     {msg.status === "approved" && (
-                      <div className="p-4 bg-green-500/10 text-green-500 text-sm flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4" /> This plan has been approved and added to your schedule.
+                      <div className="p-4 bg-green-500/10 text-green-500 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          <CheckCircle2 className="h-4 w-4" /> This plan is active on your schedule.
+                        </div>
+                        {msg.sessions && msg.sessions.length > 0 && (
+                          <div className="space-y-2 mt-2">
+                            {msg.sessions.map((session, sidx) => (
+                              <div key={session.id} className="bg-zinc-900/80 p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between border border-zinc-700/50 gap-3">
+                                <div>
+                                  <div className="text-zinc-200 font-medium text-sm">{session.title}</div>
+                                  <div className="text-zinc-400 text-xs mt-1 flex items-center gap-2">
+                                    <Calendar className="h-3 w-3" /> {session.date} 
+                                    <Clock className="h-3 w-3 ml-1" /> {session.startTime} - {session.endTime}
+                                  </div>
+                                </div>
+                                {session.status === "planned" || !session.status ? (
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => handleSessionAction(msg.planId!, session.id, "complete", msg.id, sidx)} className="bg-green-600 hover:bg-green-500 text-white text-xs h-7 px-3">Complete</Button>
+                                    <Button size="sm" variant="outline" onClick={() => handleSessionAction(msg.planId!, session.id, "skip", msg.id, sidx)} className="border-zinc-600 text-zinc-300 hover:bg-zinc-700 text-xs h-7 px-3">Skip</Button>
+                                  </div>
+                                ) : (
+                                  <Badge className={session.status === "completed" ? "bg-green-500/20 text-green-500 border-green-500/30" : "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"}>
+                                    {session.status.toUpperCase()}
+                                  </Badge>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                     {msg.status === "rejected" && (
