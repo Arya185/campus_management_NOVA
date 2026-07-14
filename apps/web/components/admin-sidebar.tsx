@@ -8,7 +8,6 @@ import {
   Calendar,
   BookOpen,
   Briefcase,
-  Car,
   Shield,
   LogOut,
   ChevronLeft,

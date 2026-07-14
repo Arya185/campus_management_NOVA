@@ -94,8 +94,8 @@ export default function SignupPage() {
                         Student
                       </h3>
                       <p className="text-zinc-300 text-lg leading-relaxed max-w-sm mx-auto">
-                        Access timetables, events, food ordering, resource
-                        booking, campus navigation, attendance tracking, and
+                        Access timetables, events, resource
+                        booking, attendance tracking, and
                         internship opportunities
                       </p>
 
@@ -158,8 +158,8 @@ export default function SignupPage() {
                         Teacher
                       </h3>
                       <p className="text-zinc-300 text-lg leading-relaxed max-w-sm mx-auto">
-                        Manage timetables, track student attendance, place food
-                        orders, and access all teaching resources
+                        Manage timetables, track student attendance,
+                        and access all teaching resources
                       </p>
 
                       {/* CTA Button */}

@@ -62,7 +62,7 @@ export function UserMenu() {
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-bold leading-none text-white">{user?.name || 'Guest'}</p>
                         <p className="text-xs leading-none text-zinc-500 mt-1 uppercase tracking-wider font-semibold">
-                            {user?.role === 'canteen' ? 'Canteen Manager' : user?.role || 'Guest'}
+                            {user?.role || 'Guest'}
                         </p>
                     </div>
                 </DropdownMenuLabel>

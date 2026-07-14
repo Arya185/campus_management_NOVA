@@ -4,7 +4,7 @@ const testimonials = [
   {
     name: "Riya Sen",
     username: "B.Tech, 3rd Year",
-    body: "I don’t miss deadlines now. My timetable, events, and food pre-orders are all in one place.",
+    body: "I don’t miss deadlines now. My timetable, events, and study plans are all in one place.",
     img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
   },
   {
@@ -14,9 +14,9 @@ const testimonials = [
     img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "Canteen Manager",
-    username: "Campus Canteen",
-    body: "Pre-orders and scheduled pickups reduce rush hours. Stock view keeps us on track.",
+    name: "Dr. Verma",
+    username: "Head of Department",
+    body: "Managing resources and tracking student progress is effortless. It saves us hours every week.",
     img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
   },
   {
@@ -28,7 +28,7 @@ const testimonials = [
   {
     name: "Ananya Gupta",
     username: "MBA, 1st Year",
-    body: "The campus map with voice help is super handy when moving between buildings.",
+    body: "The AI agent's study plans are super handy when preparing for exam weeks.",
     img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
   },
   {
@@ -50,9 +50,9 @@ const testimonials = [
     img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "Canteen Staff",
-    username: "Kitchen",
-    body: "Queues are manageable now. Scheduled orders mean less peak-time pressure.",
+    name: "System Admin",
+    username: "IT Dept",
+    body: "Role-based access is secure and seamless. Managing the campus infrastructure has never been easier.",
     img: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face",
   },
 ]
@@ -109,7 +109,7 @@ export function TestimonialsSection() {
           </h2>
 
           <p className="mt-5 relative z-10 text-center text-lg text-zinc-500">
-            Students, faculty, canteen and admins use it daily for campus workflows.
+            Students, faculty, staff and admins use it daily for campus workflows.
           </p>
         </div>
 

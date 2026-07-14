@@ -59,7 +59,7 @@ export default function Hero() {
     },
     {
       title: "Integrated Campus Features",
-      description: "Attendance, schedules, materials, and canteen ordering.",
+      description: "Attendance, schedules, and materials.",
       icon: <Sparkles className="h-full w-full" />,
       variant: "rose",
       showGridLines: true,

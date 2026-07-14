@@ -19,7 +19,7 @@ import {
 export default function LoginPage() {
   const [email, setEmail] = useState("rahul.sharma@student.edu");
   const [password, setPassword] = useState("Password@123");
-  const [role, setRole] = useState<"student" | "teacher" | "canteen">(
+  const [role, setRole] = useState<"student" | "teacher" | "admin">(
     "student",
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function LoginPage() {
       const dashboardUrls = {
         student: "/student/dashboard",
         teacher: "/teacher/dashboard",
-        canteen: "/canteen/dashboard",
+        admin: "/admin/dashboard",
       };
       window.location.href = dashboardUrls[role];
     } catch (err) {
@@ -152,7 +152,7 @@ export default function LoginPage() {
                 <SelectContent>
                   <SelectItem value="student">Student</SelectItem>
                   <SelectItem value="teacher">Teacher</SelectItem>
-                  <SelectItem value="canteen">Canteen Manager</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -56,35 +56,35 @@ export default function StudentSignupPage() {
 
   const [formData, setFormData] = useState({
     // Section 1: Personal Information
-    firstName: "Rahul",
-    lastName: "Sharma",
-    email: "rahul.sharma@student.edu",
-    password: "Password@123",
-    confirmPassword: "Password@123",
-    phone: "9876543210",
-    gender: "male",
-    dateOfBirth: "2004-07-15",
-    address: "Hostel Block A, Campus",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    gender: "",
+    dateOfBirth: "",
+    address: "",
 
     // Section 2: Academic Information
-    studentId: "STU2026001",
-    course: "Computer Science Engineering",
-    branch: "Computer Science",
-    year: "3rd Year",
-    semester: "6th Semester",
-    rollNumber: "CSE23045",
-    section: "CSE-A",
+    studentId: "",
+    course: "",
+    branch: "",
+    year: "",
+    semester: "",
+    rollNumber: "",
+    section: "",
 
     // Section 3: Emergency Contact
-    emergencyContactName: "Amit Sharma",
-    emergencyContactPhone: "9876500011",
-    emergencyContactRelation: "parent",
-    parentGuardianName: "Amit Sharma",
-    parentGuardianPhone: "9876500011",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    emergencyContactRelation: "",
+    parentGuardianName: "",
+    parentGuardianPhone: "",
 
     // Section 4: Additional Information
-    bio: "Focused on full-stack development and campus hackathons.",
-    interests: ["Programming", "AI", "Cricket"] as string[],
+    bio: "",
+    interests: [] as string[],
     skills: ["JavaScript", "React", "Node.js"] as string[],
     profilePicture: null as File | null,
   })
@@ -95,22 +95,22 @@ export default function StudentSignupPage() {
   // Load available classes on component mount
   useEffect(() => {
     const loadAvailableClasses = async () => {
-      try {
-        setIsLoadingClasses(true)
-        const response = await fetch('/api/classes/available')
-        const data = await response.json()
+      setIsLoadingClasses(true)
+      // Simulate network request for demo data
+      setTimeout(() => {
+        const demoAvailableClasses = ["CSE-3A", "CSE-3B", "ECE-2A", "MECH-4A", "IT-1A"]
+        const demoClassDetails = [
+          { className: "CSE-3A", subjectCount: 5, teacherCount: 5, subjects: ["Database Systems", "Computer Networks", "Operating Systems", "Web Development", "Software Engineering"] },
+          { className: "CSE-3B", subjectCount: 5, teacherCount: 5, subjects: ["Database Systems", "Computer Networks", "Operating Systems", "Web Development", "Software Engineering"] },
+          { className: "ECE-2A", subjectCount: 4, teacherCount: 4, subjects: ["Analog Circuits", "Signals & Systems", "Digital Logic", "Mathematics IV"] },
+          { className: "MECH-4A", subjectCount: 3, teacherCount: 3, subjects: ["Thermodynamics", "Fluid Mechanics", "Machine Design"] },
+          { className: "IT-1A", subjectCount: 4, teacherCount: 4, subjects: ["Programming in C", "Physics", "Mathematics I", "English"] }
+        ]
         
-        if (response.ok) {
-          setAvailableClasses(data.availableClasses || [])
-          setClassDetails(data.classDetails || [])
-        } else {
-          console.error('Failed to load classes:', data.error)
-        }
-      } catch (error) {
-        console.error('Error loading classes:', error)
-      } finally {
+        setAvailableClasses(demoAvailableClasses)
+        setClassDetails(demoClassDetails)
         setIsLoadingClasses(false)
-      }
+      }, 500)
     }
     
     loadAvailableClasses()
@@ -209,7 +209,20 @@ export default function StudentSignupPage() {
           ...formData,
         }),
       })
-      const data = await res.json()
+      
+      let data;
+      try {
+        data = await res.json()
+      } catch (parseError) {
+        if (res.status === 404) {
+          alert('Route not found')
+        } else {
+          alert(`Server error: ${res.status} ${res.statusText}`)
+        }
+        setIsLoading(false)
+        return
+      }
+
       if (!res.ok) {
         alert(data.error || 'Signup failed')
         setIsLoading(false)
@@ -217,7 +230,7 @@ export default function StudentSignupPage() {
       }
       window.location.href = '/student/dashboard'
     } catch (e: any) {
-      alert('Network error')
+      alert(e.message || 'Network error')
       setIsLoading(false)
     }
   }

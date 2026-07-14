@@ -9,8 +9,6 @@ import {
   Calendar, 
   BookOpen, 
   Briefcase, 
-  Car,
-  Users, 
   TrendingUp, 
   Plus,
   BarChart3,

@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import {
   Calendar,
   MapPin,
-  UtensilsCrossed,
   BookOpen,
   Users,
   Briefcase,
-  Car,
   UserCheck,
   ClipboardList,
   Settings,
@@ -21,6 +19,7 @@ import {
   CheckCircle,
   Megaphone,
   BarChart3,
+  Bot
 } from "lucide-react";
 
 interface SidebarProps {
@@ -39,7 +38,7 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
     { href: "/student/materials", icon: ClipboardList, label: "Tests & Exams" },
     { href: "/student/events", icon: Users, label: "Events" },
     { href: "/student/resources", icon: BookOpen, label: "Resources" },
-    { href: "/student/ai-mentor", icon: MapPin, label: "AI Mentor" },
+    { href: "/student/agent", icon: Bot, label: "Academic Agent" },
     { href: "/student/attendance", icon: UserCheck, label: "Attendance" },
     {
       href: "/performance",

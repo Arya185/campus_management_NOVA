@@ -15,18 +15,14 @@ export function FAQSection() {
     {
       question: "What does this campus platform include?",
       answer:
-        "Student timetables, event discovery, canteen ordering, library/seminar hall bookings, campus navigation (with voice), attendance, and internship/job listings.",
+        "Student timetables, event discovery, library/seminar hall bookings, attendance, and internship/job listings.",
     },
     {
       question: "How does role-based access work?",
       answer:
-        "Students sign up and get immediate access. Teachers and canteen staff require admin approval. Admins manage events, internships, and access.",
+        "Students sign up and get immediate access. Teachers require admin approval. Admins manage events, internships, and access.",
     },
-    {
-      question: "How are payments handled for canteen orders?",
-      answer:
-        "Use Razorpay for online payments or a ticket-based system for quick pickups. Orders can be scheduled to reduce peak-time queues.",
-    },
+
     {
       question: "Can students book resources like library desks or seminar halls?",
       answer:
@@ -35,7 +31,7 @@ export function FAQSection() {
     {
       question: "What happens after signup?",
       answer:
-        "Students are redirected to /student/dashboard. Teacher and canteen accounts are pending until admin approval, then redirected to their respective dashboards.",
+        "Students are redirected to /student/dashboard. Teacher accounts are pending until admin approval, then redirected to their respective dashboards.",
     },
   ]
 

@@ -60,20 +60,6 @@ export function fallbackResponse(type: string, data: any): any {
       summary: `${anomalies.length} student(s) flagged for low attendance.`,
     };
   }
-  if (type === "canteen") {
-    const orders = Array.isArray(data) ? data : [];
-    const demand: Record<string, number> = {};
-    for (const o of orders) demand[o.item] = (demand[o.item] || 0) + o.quantity;
-    const topItems = Object.entries(demand)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([item]) => item);
-    return {
-      topItems,
-      peakTime: "12:00–13:00",
-      recommendation: `Stock up on ${topItems[0] || "popular items"} before lunch rush.`,
-    };
-  }
   if (type === "chat") {
     const q = (data?.query || "").toLowerCase();
     if (
@@ -97,18 +83,6 @@ export function fallbackResponse(type: string, data: any): any {
         source: "attendance",
       };
     if (
-      q.includes("canteen") ||
-      q.includes("food") ||
-      q.includes("menu") ||
-      q.includes("lunch") ||
-      q.includes("eat")
-    )
-      return {
-        reply:
-          "The campus canteen is open from 8 AM to 8 PM. You can browse the menu and place orders from the Canteen section in your dashboard.",
-        source: "canteen",
-      };
-    if (
       q.includes("event") ||
       q.includes("workshop") ||
       q.includes("fest") ||
@@ -117,12 +91,6 @@ export function fallbackResponse(type: string, data: any): any {
       return {
         reply:
           "Check the Events section to see upcoming campus events, workshops, and fests. You can register directly from the platform.",
-        source: "general",
-      };
-    if (q.includes("parking") || q.includes("park") || q.includes("vehicle"))
-      return {
-        reply:
-          "Campus parking availability can be checked in the Parking section. Book a slot in advance to ensure a spot.",
         source: "general",
       };
     if (
@@ -136,14 +104,12 @@ export function fallbackResponse(type: string, data: any): any {
         source: "general",
       };
     return {
-      reply:
-        "I'm ARC AI, your campus assistant! I can help you with your timetable, attendance, canteen orders, events, parking, and more. What would you like to know?",
+        "I'm ARC AI, your campus assistant! I can help you with your timetable, attendance, events, internships, and more. What would you like to know?",
       source: "general",
     };
   }
   return {
-    reply:
-      "I'm here to help! Ask me about your timetable, attendance, canteen, or events.",
+      "I'm here to help! Ask me about your timetable, attendance, or events.",
     source: "general",
   };
 }

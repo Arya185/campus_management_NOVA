@@ -5,14 +5,12 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
-  UtensilsCrossed,
   UserCheck,
   Settings,
   LogOut,
   Users,
   BookOpen,
   ClipboardList,
-  Car,
   Upload,
   BarChart3,
 } from "lucide-react";
@@ -27,9 +25,7 @@ export function TeacherSidebar({ className = "" }: SidebarProps) {
 
   const navItems = [
     { href: "/teacher/dashboard", icon: Users, label: "Dashboard" },
-    // { href: "/teacher/timetable", icon: Calendar, label: "Timetable" },
     { href: "/teacher/classroom", icon: UserCheck, label: "Classroom" },
-    // { href: "/teacher/attendance-management", icon: UserCheck, label: "Attendance" },
     {
       href: "/teacher/classroom/attendance",
       icon: UserCheck,

@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { 
   Calendar, 
   UserCheck, 
-  UtensilsCrossed,
   Users,
   BookOpen,
   Clock,
@@ -17,15 +16,11 @@ import {
   Award,
   AlertCircle,
   Bell,
-  ShoppingBag,
   CalendarDays,
-  IndianRupee,
   CheckCircle,
-  Building,
   MapPin,
   ChevronRight,
   Loader2
-  ,Car
 } from "lucide-react"
 import { UserMenu } from "@/components/user-menu"
 

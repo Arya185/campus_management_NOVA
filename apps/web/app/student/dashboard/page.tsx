@@ -11,8 +11,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts"
 import {
-  Calendar, Briefcase, Bell, Users, BookOpen, ShoppingBag,
-  IndianRupee, Car, TrendingUp, ArrowUpRight, ArrowDownRight,
+  Calendar, Briefcase, Bell, Users, BookOpen,
+  IndianRupee, TrendingUp, ArrowUpRight, ArrowDownRight,
   CheckCircle, Clock, AlertCircle, Activity, Star, Code,
   Music, Trophy, Lightbulb, Palette, MapPin, FileText, Award, Megaphone
 } from "lucide-react"
@@ -269,8 +269,8 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                 ))}
-                <Link href="/student/timetable" className="block text-center text-xs text-[#e78a53] hover:underline mt-1">
-                  Full timetable →
+                <Link href="/student/schedule" className="block text-center text-xs text-[#e78a53] hover:underline mt-1">
+                  View Full Schedule
                 </Link>
               </CardContent>
             </Card>
