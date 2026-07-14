@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { connectToDatabase } from "./db";
-import { StudentModel, TimetableModel, AttendanceModel, AssignmentModel } from "./models";
-
+import { StudentModel, TimetableModel, AttendanceModel, AssignmentModel, StudyPlanModel, AgentActionModel } from "./models";
 export async function getStudentTimetable(studentId: string) {
   await connectToDatabase();
   
@@ -99,3 +98,99 @@ export async function getUpcomingAssignments(studentId: string) {
     };
   });
 }
+
+export interface StudySessionInput {
+  title: string;
+  date: string; // YYYY-MM-DD
+  startTime: string; // HH:mm
+  endTime: string; // HH:mm
+  subject?: string;
+  topics?: string[];
+}
+
+export interface StudyPlanInput {
+  goal: string;
+  sessions: StudySessionInput[];
+  rationale?: string;
+  activityLog?: string[];
+}
+
+function validateTime(timeStr: string) {
+  return /^([01]\d|2[0-3]):([0-5]\d)$/.test(timeStr);
+}
+
+export async function proposeStudyPlan(studentId: string, input: StudyPlanInput) {
+  await connectToDatabase();
+
+  const student = await StudentModel.findById(studentId).lean();
+  if (!student) throw new Error(`Student not found with ID: ${studentId}`);
+  if (!input.goal) throw new Error("Study plan requires a goal");
+  if (!input.sessions || input.sessions.length === 0) throw new Error("Study plan requires at least one session");
+
+  for (const session of input.sessions) {
+    if (!session.title || !session.date || !session.startTime || !session.endTime) {
+      throw new Error("Each session must have a title, date, startTime, and endTime");
+    }
+    if (!validateTime(session.startTime) || !validateTime(session.endTime)) {
+      throw new Error("Invalid time format. Use HH:mm");
+    }
+    const [startH, startM] = session.startTime.split(":").map(Number);
+    const [endH, endM] = session.endTime.split(":").map(Number);
+    if (startH * 60 + startM >= endH * 60 + endM) {
+      throw new Error(`Start time (${session.startTime}) must be before end time (${session.endTime})`);
+    }
+  }
+
+  // Create the StudyPlan in pending state
+  const studyPlan = await StudyPlanModel.create({
+    studentId,
+    goal: input.goal,
+    status: "pending",
+    sessions: input.sessions.map(s => ({
+      ...s,
+      status: "planned"
+    }))
+  });
+
+  // Create the corresponding AgentAction for audit and approval
+  const agentAction = await AgentActionModel.create({
+    studentId,
+    actionType: "create_plan",
+    summary: `Proposed study plan: ${input.goal}`,
+    activityLog: input.activityLog || [],
+    rationale: input.rationale || "Generated based on student academic data.",
+    status: "pending",
+    planId: studyPlan._id
+  });
+
+  return {
+    success: true,
+    message: "Study plan proposed successfully.",
+    planId: studyPlan._id.toString(),
+    actionId: agentAction._id.toString(),
+    status: "pending"
+  };
+}
+
+export async function resolveAgentAction(actionId: string, status: "approved" | "rejected") {
+  await connectToDatabase();
+  
+  const action = await AgentActionModel.findById(actionId);
+  if (!action) throw new Error("AgentAction not found");
+  if (action.status !== "pending") throw new Error(`Action is already ${action.status}`);
+
+  action.status = status;
+  await action.save();
+
+  // If the action is tied to a StudyPlan, sync the status
+  if (action.planId) {
+    const plan = await StudyPlanModel.findById(action.planId);
+    if (plan) {
+      plan.status = status;
+      await plan.save();
+    }
+  }
+
+  return { success: true, status };
+}
+
