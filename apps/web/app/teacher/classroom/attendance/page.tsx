@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+
 import { TeacherSidebar } from "@/components/teacher-sidebar"
 import { UserMenu } from "@/components/user-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -61,19 +63,9 @@ export default function TeacherAttendancePage() {
     const [remarks, setRemarks] = useState("")
     const [loading, setLoading] = useState(false)
     const [initialLoading, setInitialLoading] = useState(true)
-    const [currentUser, setCurrentUser] = useState<any>(null)
+  const { data: session } = useSession()
+  const currentUser = session?.user
 
-    useEffect(() => {
-        try {
-            const user = localStorage.getItem('currentUser')
-            if (user) {
-                const userData = JSON.parse(user)
-                setCurrentUser(userData)
-            }
-        } catch (error) {
-            console.error('Error loading user data:', error)
-        }
-    }, [])
 
     useEffect(() => {
         if (currentUser) {

@@ -35,6 +35,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
+
 
 interface Internship {
   _id: string
@@ -67,7 +69,7 @@ interface Internship {
 const mockInternships: Internship[] = [
   { _id:"mi1", title:"Software Engineering Intern", company:"TechCorp India", description:"Work on scalable backend systems using Node.js and AWS. Opportunity to work with senior engineers.", requirements:["B.Tech CS/IT","CGPA ≥ 7.0"], responsibilities:["Build REST APIs","Write unit tests","Code reviews"], skills:["Node.js","AWS","MongoDB"], location:"Mumbai", locationType:"hybrid", duration:"6 months", stipend:"₹25,000/mo", applicationDeadline: new Date(Date.now()+12*86400000).toISOString(), contactEmail:"hr@techcorp.in", status:"active", category:"engineering", experienceLevel:"fresher", isRemote:false, applicationCount:34, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
   { _id:"mi2", title:"Frontend Developer Intern", company:"DesignHub", description:"Create pixel-perfect UI using React and Tailwind CSS for SaaS products.", requirements:["Any CS background","Portfolio preferred"], responsibilities:["Implement UI designs","Optimize performance"], skills:["React","TypeScript","Tailwind CSS"], location:"Remote", locationType:"remote", duration:"3 months", stipend:"₹15,000/mo", applicationDeadline: new Date(Date.now()+5*86400000).toISOString(), contactEmail:"careers@designhub.io", status:"active", category:"engineering", experienceLevel:"fresher", isRemote:true, applicationCount:61, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
-  { _id:"mi3", title:"Data Science Intern", company:"DataMinds Analytics", description:"Analyse large datasets and build ML models to predict customer churn.", requirements:["Python proficiency","Statistics fundamentals"], responsibilities:["Data cleaning","Model training","Dashboard creation"], skills:["Python","Pandas","Scikit-learn","SQL"], location:"Pune", locationType:"onsite", duration:"4 months", stipend:"₹20,000/mo", applicationDeadline: new Date(Date.now()+20*86400000).toISOString(), contactEmail:"intern@dataminds.co", status:"active", category:"engineering", experienceLevel:"fresher", isRemote:false, applicationCount:28, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
+  { _id:"mi3", title:"Data Science Intern", company:"DataMinds Analytics", description:"Analyse large datasets and build ML models to predict customer churn.", requirements:["Python proficiency","Statistics fundamentals"], responsibilities:["Data cleaning","Model training","Dashboard creation"], skills:["Python","Pandas","git","SQL"], location:"Pune", locationType:"onsite", duration:"4 months", stipend:"₹20,000/mo", applicationDeadline: new Date(Date.now()+20*86400000).toISOString(), contactEmail:"intern@dataminds.co", status:"active", category:"engineering", experienceLevel:"fresher", isRemote:false, applicationCount:28, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
   { _id:"mi4", title:"UI/UX Design Intern", company:"CreativeStudio", description:"Design user-centered experiences for mobile and web products. Collaborate with product managers.", requirements:["Figma expertise","Portfolio required"], responsibilities:["Wireframes","Prototypes","User research"], skills:["Figma","Adobe XD","User Research"], location:"Bangalore", locationType:"hybrid", duration:"3 months", stipend:"₹18,000/mo", applicationDeadline: new Date(Date.now()+8*86400000).toISOString(), contactEmail:"design@creativestudio.in", status:"active", category:"design", experienceLevel:"fresher", isRemote:false, applicationCount:47, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
   { _id:"mi5", title:"Digital Marketing Intern", company:"GrowFast Startup", description:"Run and optimise social media campaigns, SEO, and paid ads to grow brand awareness.", requirements:["Any background","Social media savvy"], responsibilities:["Content creation","Ad campaigns","Analytics reporting"], skills:["Google Ads","SEO","Content Writing","Analytics"], location:"Remote", locationType:"remote", duration:"2 months", stipend:"₹10,000/mo", applicationDeadline: new Date(Date.now()+30*86400000).toISOString(), contactEmail:"marketing@growfast.co", status:"active", category:"marketing", experienceLevel:"fresher", isRemote:true, applicationCount:52, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() },
 ]
@@ -90,29 +92,9 @@ export default function StudentInternshipsPage() {
   const [applicationError, setApplicationError] = useState<string | null>(null)
   const [applicationSuccess, setApplicationSuccess] = useState(false)
   const [appliedInternships, setAppliedInternships] = useState<Set<string>>(new Set())
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const { data: session } = useSession()
+  const currentUser = session?.user
 
-  useEffect(() => {
-    // Load current user
-    try {
-      const user = localStorage.getItem('currentUser')
-      if (user) {
-        const userData = JSON.parse(user)
-        setCurrentUser(userData)
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error)
-    }
-    
-    fetchInternships()
-    
-    // Set up real-time polling to fetch new data every 30 seconds
-    const interval = setInterval(() => {
-      fetchInternships()
-    }, 30000) // 30 seconds
-    
-    return () => clearInterval(interval)
-  }, [])
   
   useEffect(() => {
     if (currentUser) {

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { StudentSidebar } from "@/components/student-sidebar"
@@ -94,19 +96,9 @@ export default function StudentAttendancePage() {
   const [endDate, setEndDate] = useState("")
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const { data: session } = useSession()
+  const currentUser = session?.user
 
-  useEffect(() => {
-    try {
-      const user = localStorage.getItem('currentUser')
-      if (user) {
-        const userData = JSON.parse(user)
-        setCurrentUser(userData)
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error)
-    }
-  }, [])
 
   useEffect(() => {
     if (currentUser) {

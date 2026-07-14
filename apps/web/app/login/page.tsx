@@ -5,6 +5,8 @@ import type React from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +19,7 @@ import {
 } from "@/components/ui/select";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("rahul.sharma@student.edu");
   const [password, setPassword] = useState("Password@123");
   const [role, setRole] = useState<"student" | "teacher" | "admin">(
@@ -28,26 +31,27 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+        role,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "Login failed");
+
+      if (result?.error) {
+        alert(result.error);
         setIsLoading(false);
         return;
       }
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userRole", role);
-      localStorage.setItem("currentUser", JSON.stringify(data));
+
       const dashboardUrls = {
         student: "/student/dashboard",
         teacher: "/teacher/dashboard",
         admin: "/admin/dashboard",
       };
-      window.location.href = dashboardUrls[role];
+      
+      router.push(dashboardUrls[role]);
+      router.refresh(); // Refresh to ensure session state updates
     } catch (err) {
       alert("Network error");
       setIsLoading(false);

@@ -26,12 +26,11 @@ async function runSeed() {
     const teacherEmail = "jane.doe@teacher.edu";
 
     // Upsert Teacher
-    let teacher = await TeacherModel.findOne({ email: teacherEmail });
-    if (!teacher) {
-      teacher = await TeacherModel.create({
+    await TeacherModel.findOneAndUpdate(
+      { email: teacherEmail },
+      {
         firstName: "Jane",
         lastName: "Doe",
-        email: teacherEmail,
         password: "Password@123",
         phone: "1234567890",
         gender: "female",
@@ -48,16 +47,17 @@ async function runSeed() {
         emergencyContactPhone: "0987654321",
         emergencyContactRelation: "Spouse",
         avatarInitials: "JD"
-      });
-    }
+      },
+      { upsert: true }
+    );
+    let teacher = await TeacherModel.findOne({ email: teacherEmail });
 
     // Upsert Student
-    let student = await StudentModel.findOne({ email: studentEmail });
-    if (!student) {
-      student = await StudentModel.create({
+    await StudentModel.findOneAndUpdate(
+      { email: studentEmail },
+      {
         firstName: "Rahul",
         lastName: "Sharma",
-        email: studentEmail,
         password: "Password@123",
         phone: "9876543210",
         gender: "male",
@@ -76,8 +76,10 @@ async function runSeed() {
         parentGuardianName: "Ramesh Sharma",
         parentGuardianPhone: "9988776655",
         avatarInitials: "RS"
-      });
-    }
+      },
+      { upsert: true }
+    );
+    let student = await StudentModel.findOne({ email: studentEmail });
 
     // Classrooms
     const classes = [

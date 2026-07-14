@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { TeacherSidebar } from "@/components/teacher-sidebar"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -78,7 +79,8 @@ export default function TeacherDashboardPage() {
         { classroomId: "CS301", subject: "Data Structures", time: "9:00 AM", room: "Room 301", students: 48 },
         { classroomId: "CS305", subject: "Database Systems", time: "11:00 AM", room: "Room 205", students: 42 },
     ]
-    const [currentUser, setCurrentUser] = useState<any>(null)
+    const { data: session } = useSession()
+    const currentUser = session?.user
     const [loading, setLoading] = useState(false)
     const [classrooms, setClassrooms] = useState<Classroom[]>([])
     const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])
@@ -90,19 +92,6 @@ export default function TeacherDashboardPage() {
     })
     const displayClassrooms = classrooms.length ? classrooms : demoClassrooms
     const displayTodayClasses = todayClasses.length ? todayClasses : demoTodayClasses
-
-    useEffect(() => {
-        // Load current user
-        try {
-            const user = localStorage.getItem('currentUser')
-            if (user) {
-                const userData = JSON.parse(user)
-                setCurrentUser(userData)
-            }
-        } catch (error) {
-            console.error('Error loading user data:', error)
-        }
-    }, [])
 
     useEffect(() => {
         if (currentUser) {

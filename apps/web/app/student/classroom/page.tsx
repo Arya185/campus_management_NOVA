@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+
 import Link from "next/link"
 import { StudentSidebar } from "@/components/student-sidebar"
 import { UserMenu } from "@/components/user-menu"

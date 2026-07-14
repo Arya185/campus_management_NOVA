@@ -12,7 +12,6 @@ import {
   BookOpen,
   ClipboardList,
   Upload,
-  BarChart3,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -30,11 +29,6 @@ export function TeacherSidebar({ className = "" }: SidebarProps) {
       href: "/teacher/classroom/attendance",
       icon: UserCheck,
       label: "Attendance",
-    },
-    {
-      href: "/performance",
-      icon: BarChart3,
-      label: "Predict Student Performance",
     },
     {
       href: "/teacher/classroom/materials",

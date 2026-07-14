@@ -1,3 +1,4 @@
 {
-    "chat.checkpoints.showFileChanges": true
+    "chat.checkpoints.showFileChanges": true,
+    "python.defaultInterpreterPath": "${workspaceFolder}/apps/ml-api/.venv/bin/python"
 }

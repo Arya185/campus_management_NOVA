@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { StudentSidebar } from "@/components/student-sidebar"
 import { UserMenu } from "@/components/user-menu"
@@ -129,7 +130,6 @@ export default function StudentSchedulePage() {
     const [currentWeekStart, setCurrentWeekStart] = useState("")
     const [loading, setLoading] = useState(false)
     const [initialLoading, setInitialLoading] = useState(true)
-    const [currentUser, setCurrentUser] = useState<any>(null)
 
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     const timeSlots = [
@@ -138,17 +138,8 @@ export default function StudentSchedulePage() {
         "16:00-17:00", "17:00-18:00"
     ]
 
-    useEffect(() => {
-        try {
-            const user = localStorage.getItem('currentUser')
-            if (user) {
-                const userData = JSON.parse(user)
-                setCurrentUser(userData)
-            }
-        } catch (error) {
-            console.error('Error loading user data:', error)
-        }
-    }, [])
+    const { data: session } = useSession()
+    const currentUser = session?.user
 
     useEffect(() => {
         if (currentUser) {
@@ -192,20 +183,65 @@ export default function StudentSchedulePage() {
             if (response.ok) {
                 const data = await response.json()
                 const hasSchedule = data.schedule?.weeklyData && Object.keys(data.schedule.weeklyData).length > 0
-                setSchedule(hasSchedule ? data.schedule : mockSchedule)
-                setEnrollments(data.enrollments?.length ? data.enrollments : mockEnrollments)
-                setClassroom(data.classroom || mockSchedule.classroomId)
+                const fallbackSchedule = {
+                    ...mockSchedule,
+                    classroomId: {
+                        ...mockSchedule.classroomId,
+                        title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                    }
+                }
+                const fallbackEnrollments = [
+                    {
+                        classroomId: {
+                            ...mockEnrollments[0].classroomId,
+                            title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                        }
+                    }
+                ]
+                setSchedule(hasSchedule ? data.schedule : fallbackSchedule)
+                setEnrollments(data.enrollments?.length ? data.enrollments : fallbackEnrollments)
+                setClassroom(data.classroom || fallbackSchedule.classroomId)
             } else {
                 console.warn('Schedule API returned error, using mock data')
-                setSchedule(mockSchedule)
-                setEnrollments(mockEnrollments)
-                setClassroom(mockSchedule.classroomId)
+                const fallbackSchedule = {
+                    ...mockSchedule,
+                    classroomId: {
+                        ...mockSchedule.classroomId,
+                        title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                    }
+                }
+                const fallbackEnrollments = [
+                    {
+                        classroomId: {
+                            ...mockEnrollments[0].classroomId,
+                            title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                        }
+                    }
+                ]
+                setSchedule(fallbackSchedule)
+                setEnrollments(fallbackEnrollments)
+                setClassroom(fallbackSchedule.classroomId)
             }
         } catch (error) {
             console.error('Error fetching schedule:', error)
-            setSchedule(mockSchedule)
-            setEnrollments(mockEnrollments)
-            setClassroom(mockSchedule.classroomId)
+            const fallbackSchedule = {
+                ...mockSchedule,
+                classroomId: {
+                    ...mockSchedule.classroomId,
+                    title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                }
+            }
+            const fallbackEnrollments = [
+                {
+                    classroomId: {
+                        ...mockEnrollments[0].classroomId,
+                        title: `CS-301 (${currentUser.name || currentUser.firstName || 'Student'})`
+                    }
+                }
+            ]
+            setSchedule(fallbackSchedule)
+            setEnrollments(fallbackEnrollments)
+            setClassroom(fallbackSchedule.classroomId)
         } finally {
             setLoading(false)
             setInitialLoading(false)

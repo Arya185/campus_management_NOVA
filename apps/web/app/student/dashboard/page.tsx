@@ -95,25 +95,19 @@ function KPI({ icon: Icon, label, value, sub, trend, up, color, bg }: any) {
   )
 }
 
+import { useSession } from "next-auth/react"
+
 export default function StudentDashboard() {
-  const [currentUser, setCurrentUser] = useState<any>(null)
-  useEffect(() => {
-    try {
-      const u = localStorage.getItem("currentUser")
-      if (u) setCurrentUser(JSON.parse(u))
-    } catch {}
-  }, [])
+  const { data: session } = useSession()
+  const currentUser = session?.user
 
   // Students have firstName/lastName from DB; admin has username='ADMIN1'
   // Never show admin username on student dashboard
   const name = (() => {
-    if (!currentUser) return "Rohit Sharma"
-    if (currentUser.role === "admin") return "Rohit Sharma"
+    if (!currentUser) return ""
+    if (currentUser.role === "admin") return currentUser.name || "Admin"
     if (currentUser.firstName) return `${currentUser.firstName}${currentUser.lastName ? " " + currentUser.lastName : ""}`
-    if (currentUser.fullName) return currentUser.fullName
-    if (currentUser.displayName) return currentUser.displayName
-    if (currentUser.username && currentUser.username.toUpperCase() !== "ADMIN1") return currentUser.username
-    return "Rohit Sharma"
+    return currentUser.name || ""
   })()
 
   return (

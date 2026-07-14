@@ -18,7 +18,6 @@ import {
   FileText,
   CheckCircle,
   Megaphone,
-  BarChart3,
   Bot
 } from "lucide-react";
 
@@ -40,11 +39,6 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
     { href: "/student/resources", icon: BookOpen, label: "Resources" },
     { href: "/student/agent", icon: Bot, label: "Academic Agent" },
     { href: "/student/attendance", icon: UserCheck, label: "Attendance" },
-    {
-      href: "/performance",
-      icon: BarChart3,
-      label: "Predict Student Performance",
-    },
     { href: "/student/internships", icon: Briefcase, label: "Internships" },
     { href: "/student/fees", icon: IndianRupee, label: "Pay Fees" },
     { href: "/student/examination", icon: Award, label: "Exam Cell" },
