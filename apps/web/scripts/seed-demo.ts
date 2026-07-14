@@ -5,6 +5,7 @@ import path from "path";
 const projectDir = path.resolve(process.cwd());
 loadEnvConfig(projectDir);
 
+import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { connectToDatabase } from "../lib/db";
 import {
@@ -26,12 +27,13 @@ async function runSeed() {
     const teacherEmail = "jane.doe@teacher.edu";
 
     // Upsert Teacher
+    const teacherPassword = await bcrypt.hash("Password@123", 12);
     await TeacherModel.findOneAndUpdate(
       { email: teacherEmail },
       {
         firstName: "Jane",
         lastName: "Doe",
-        password: "Password@123",
+        password: teacherPassword,
         phone: "1234567890",
         gender: "female",
         dateOfBirth: "1980-01-01",
@@ -53,12 +55,13 @@ async function runSeed() {
     let teacher = await TeacherModel.findOne({ email: teacherEmail });
 
     // Upsert Student
+    const studentPassword = await bcrypt.hash("Password@123", 12);
     await StudentModel.findOneAndUpdate(
       { email: studentEmail },
       {
         firstName: "Rahul",
         lastName: "Sharma",
-        password: "Password@123",
+        password: studentPassword,
         phone: "9876543210",
         gender: "male",
         dateOfBirth: "2002-05-15",

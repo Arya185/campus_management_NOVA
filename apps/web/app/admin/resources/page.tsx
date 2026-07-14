@@ -34,7 +34,7 @@ import {
   Upload,
   X
 } from "lucide-react"
-import { redirectIfNotAuthenticatedAdmin } from '@/lib/auth-middleware'
+import { redirectIfNotAuthenticatedAdmin } from '@/lib/auth-client'
 
 interface Resource {
   _id: string

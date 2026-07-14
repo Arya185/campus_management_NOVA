@@ -144,6 +144,10 @@ Your role is to help the student with academic planning, scheduling, and risk ma
 
     if (msg.tool_calls && msg.tool_calls.length > 0) {
       for (const call of msg.tool_calls) {
+        if (!("function" in call)) {
+          continue;
+        }
+
         const name = call.function.name;
         let args: any = {};
         try { args = JSON.parse(call.function.arguments || "{}"); } catch(e) {}

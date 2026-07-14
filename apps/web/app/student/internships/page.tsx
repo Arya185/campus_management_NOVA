@@ -125,7 +125,7 @@ export default function StudentInternshipsPage() {
     if (!currentUser) return
     
     try {
-      const response = await fetch(`/api/student/internships/apply?studentId=${currentUser._id || currentUser.id}`)
+      const response = await fetch(`/api/student/internships/apply?studentId=${currentUser.id}`)
       if (response.ok) {
         const data = await response.json()
         const appliedIds = new Set<string>(data.applications.map((app: any) => app.internshipId._id))

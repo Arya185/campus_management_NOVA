@@ -1,16 +1,17 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Shield, AlertCircle } from "lucide-react"
-import { isAuthenticatedAdmin } from '@/lib/auth-middleware'
+import { isAuthenticatedAdmin } from "@/lib/auth-client"
 
 export default function AdminLoginPage() {
-  const [credentials, setCredentials] = useState({ username: 'ADMIN1', password: 'Admin@123' })
+  const [credentials, setCredentials] = useState({ username: "", password: "" })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -42,9 +43,11 @@ export default function AdminLoginPage() {
         localStorage.setItem('isLoggedIn', 'true')
         localStorage.setItem('userRole', 'admin')
         localStorage.setItem('currentUser', JSON.stringify({
-          id: 'admin1',
-          username: 'ADMIN1',
-          role: 'admin'
+          id: data.id,
+          username: data.username,
+          name: data.name,
+          role: data.role,
+          email: data.email,
         }))
 
         window.location.href = '/admin/dashboard'
@@ -66,7 +69,7 @@ export default function AdminLoginPage() {
             <div className="mx-auto w-16 h-16 bg-[#e78a53]/10 rounded-full flex items-center justify-center mb-4">
               <Shield className="h-8 w-8 text-[#e78a53]" />
             </div>
-            <CardTitle className="text-2xl font-bold text-white">Admin Login</CardTitle>
+            <CardTitle className="text-2xl font-bold text-white">NOVA Admin Login</CardTitle>
             <p className="text-zinc-400 mt-2">Access the admin dashboard</p>
           </CardHeader>
           <CardContent>
@@ -123,12 +126,12 @@ export default function AdminLoginPage() {
             </form>
             
             <div className="mt-6 text-center">
-              <a
+              <Link
                 href="/"
                 className="text-sm text-zinc-400 hover:text-[#e78a53] transition-colors"
               >
                 ← Back to Home
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>

@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 
 export function StickyFooter() {
   const [isAtBottom, setIsAtBottom] = useState(false);
+  const setTargetColor = (event: React.MouseEvent<HTMLElement>, color: string) => {
+    event.currentTarget.style.color = color;
+  };
 
   useEffect(() => {
     let ticking = false;
@@ -53,30 +56,24 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Home
                 </li>
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Docs
                 </li>
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Components
                 </li>
@@ -85,30 +82,24 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Github
                 </li>
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Twitter
                 </li>
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.color = "#121113")}
+                  onMouseEnter={(e) => setTargetColor(e, "rgba(18, 17, 19, 0.8)")}
+                  onMouseLeave={(e) => setTargetColor(e, "#121113")}
                 >
                   Discord
                 </li>
@@ -121,7 +112,7 @@ export function StickyFooter() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              ARC Campus
+              NOVA Campus
             </motion.h2>
           </div>
         </motion.div>

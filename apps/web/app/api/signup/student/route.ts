@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
-import { StudentModel } from '@/lib/models';
+import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/db";
+import { StudentModel } from "@/lib/models";
 
 export async function POST(req: Request) {
   try {
@@ -35,9 +36,12 @@ export async function POST(req: Request) {
     }
 
     // Create the student
+    const hashedPassword = await bcrypt.hash(body.password, 12);
+
     const student = new StudentModel({
       ...body,
       email: body.email.toLowerCase(),
+      password: hashedPassword,
       // Ensure required fields have fallbacks if missing for testing
       firstName: body.firstName || 'Unknown',
       lastName: body.lastName || 'Unknown',
@@ -69,10 +73,9 @@ export async function POST(req: Request) {
       }
     }, { status: 201 });
 
-  } catch (error: any) {
-    console.error('Signup error:', error);
+  } catch {
     return NextResponse.json(
-      { error: 'Internal server error: ' + error.message },
+      { error: "Unable to create student account." },
       { status: 500 }
     );
   }

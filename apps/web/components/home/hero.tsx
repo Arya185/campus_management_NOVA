@@ -80,12 +80,15 @@ export default function Hero() {
               </svg>
 
               {/* Role-based CTAs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-4xl justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl justify-center">
                 <a href="/signup/student" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
                   I'm a Student
                 </a>
                 <a href="/signup/teacher" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
                   I'm a Teacher
+                </a>
+                <a href="/admin/login" className="rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] px-4 py-3 text-sm">
+                  I'm an Admin
                 </a>
               </div>
             </motion.div>

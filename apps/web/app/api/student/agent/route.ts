@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
     // Resolve real MongoDB _id using the auth session id
     await connectToDatabase();
-    const student = await StudentModel.findOne({ studentId: session.user.id }).lean();
+    const student = (await StudentModel.findById(session.user.id).lean()) as any;
     if (!student) {
       return NextResponse.json({ error: "Student profile not found" }, { status: 404 });
     }

@@ -1,176 +1,209 @@
-// Helper function to get current user from localStorage (client-side)
-import { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
- 
-type AuthUser = {
-  id: string
-  email: string
-  password?: string
-  role: "student" | "teacher" | "admin"
-  name: string
-  firstName?: string
-  lastName?: string
-  studentId?: string
+import bcrypt from "bcryptjs";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { connectToDatabase } from "./db";
+import { AdminModel, StudentModel, TeacherModel } from "./models";
+
+const nextAuthSecret = process.env.NEXTAUTH_SECRET?.trim();
+
+if (!nextAuthSecret) {
+  throw new Error("Missing NEXTAUTH_SECRET environment variable.");
 }
- 
-const authUsers: AuthUser[] = [
-  {
-    id: "student1",
-    email: "rahul.sharma@student.edu",
-    password: "Password@123",
-    role: "student",
-    name: "Rahul Sharma",
-  },
-  {
-    id: "teacher1",
-    email: "jane.doe@teacher.edu",
-    password: "Password@123",
-    role: "teacher",
-    name: "Jane Doe",
-  },
-  {
-    id: "admin1",
-    email: "admin@campus.edu",
-    password: "Password@123",
-    role: "admin",
-    name: "Campus Admin",
-  },
-]
- 
-export function findUserByCredentials(
-  email: string,
-  password: string,
-  role: string,
-) {
-  return authUsers.find(
-    (user) =>
-      user.email.toLowerCase() === email.toLowerCase() &&
-      user.password === password &&
-      user.role === role,
-  )
-}
- 
-// ── Extend next-auth types ────────────────────────────────────────────────────
-// (If you have a types/next-auth.d.ts file, you can move these there instead)
+
+type SessionRole = "student" | "teacher" | "admin";
+
+type AuthorizedUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: SessionRole;
+  firstName?: string;
+  lastName?: string;
+  studentId?: string;
+  username?: string;
+};
+
 declare module "next-auth" {
   interface User {
-    id: string
-    role?: string
-    firstName?: string
-    lastName?: string
-    studentId?: string
+    id: string;
+    _id?: string;
+    role?: string;
+    firstName?: string;
+    lastName?: string;
+    studentId?: string;
+    username?: string;
   }
+
   interface Session {
     user: {
-      id: string
-      role?: string
-      name?: string | null
-      email?: string | null
-      image?: string | null
-      firstName?: string
-      lastName?: string
-      studentId?: string
-    }
+      id: string;
+      _id?: string;
+      role?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      firstName?: string;
+      lastName?: string;
+      studentId?: string;
+      username?: string;
+    };
   }
 }
- 
+
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string
-    role?: string
-    firstName?: string
-    lastName?: string
-    studentId?: string
+    id: string;
+    _id?: string;
+    role?: string;
+    firstName?: string;
+    lastName?: string;
+    studentId?: string;
+    username?: string;
   }
 }
- 
-// ─── authOptions ──────────────────────────────────────────────────────────────
-import { connectToDatabase } from "./db"
-import { StudentModel, TeacherModel } from "./models"
+
+async function authorizeStudent(
+  email: string,
+  password: string,
+): Promise<AuthorizedUser | null> {
+  const student = await StudentModel.findOne({ email: email.toLowerCase() });
+  if (!student) {
+    return null;
+  }
+
+  const isValid = await bcrypt.compare(password, student.password);
+  if (!isValid) {
+    return null;
+  }
+
+  return {
+    id: student._id.toString(),
+    email: student.email,
+    name: `${student.firstName} ${student.lastName}`,
+    firstName: student.firstName,
+    lastName: student.lastName,
+    role: "student",
+    studentId: student.studentId,
+  };
+}
+
+async function authorizeTeacher(
+  email: string,
+  password: string,
+): Promise<AuthorizedUser | null> {
+  const teacher = await TeacherModel.findOne({ email: email.toLowerCase() });
+  if (!teacher) {
+    return null;
+  }
+
+  const isValid = await bcrypt.compare(password, teacher.password);
+  if (!isValid) {
+    return null;
+  }
+
+  return {
+    id: teacher._id.toString(),
+    email: teacher.email,
+    name: `${teacher.firstName} ${teacher.lastName}`,
+    firstName: teacher.firstName,
+    lastName: teacher.lastName,
+    role: "teacher",
+  };
+}
+
+async function authorizeAdmin(
+  emailOrUsername: string,
+  password: string,
+): Promise<AuthorizedUser | null> {
+  const normalized = emailOrUsername.toLowerCase();
+  const admin = await AdminModel.findOne({
+    $or: [
+      { email: normalized },
+      { username: { $regex: `^${emailOrUsername.trim()}$`, $options: "i" } },
+    ],
+  });
+
+  if (!admin) {
+    return null;
+  }
+
+  const isValid = await bcrypt.compare(password, admin.password);
+  if (!isValid) {
+    return null;
+  }
+
+  return {
+    id: admin._id.toString(),
+    email: admin.email,
+    name: admin.name,
+    role: "admin",
+    username: admin.username,
+  };
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email:    { label: "Email",    type: "email"    },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        role:     { label: "Role",     type: "text"     },
+        role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password || !credentials?.role) {
-          return null
+          return null;
         }
 
-        await connectToDatabase()
+        await connectToDatabase();
 
         if (credentials.role === "student") {
-          const student = await StudentModel.findOne({ email: credentials.email.toLowerCase() })
-          if (!student || student.password !== credentials.password) {
-            return null
-          }
-          return {
-            id: student._id.toString(),
-            email: student.email,
-            name: `${student.firstName} ${student.lastName}`,
-            firstName: student.firstName,
-            lastName: student.lastName,
-            role: "student",
-            studentId: student.studentId
-          }
-        } else if (credentials.role === "teacher") {
-          const teacher = await TeacherModel.findOne({ email: credentials.email.toLowerCase() })
-          if (!teacher || teacher.password !== credentials.password) {
-            // fallback to mock for demo purposes if teacher not in DB
-            return findUserByCredentials(credentials.email, credentials.password, credentials.role) ?? null
-          }
-          return {
-            id: teacher._id.toString(),
-            email: teacher.email,
-            name: `${teacher.firstName} ${teacher.lastName}`,
-            firstName: teacher.firstName,
-            lastName: teacher.lastName,
-            role: "teacher"
-          }
+          return authorizeStudent(credentials.email, credentials.password);
         }
 
-        return findUserByCredentials(
-          credentials.email,
-          credentials.password,
-          credentials.role,
-        ) ?? null
+        if (credentials.role === "teacher") {
+          return authorizeTeacher(credentials.email, credentials.password);
+        }
+
+        if (credentials.role === "admin") {
+          return authorizeAdmin(credentials.email, credentials.password);
+        }
+
+        return null;
       },
     }),
   ],
- 
   session: { strategy: "jwt" },
- 
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id   = user.id
-        token.role = (user as { role?: string }).role
-        token.firstName = (user as { firstName?: string }).firstName
-        token.lastName = (user as { lastName?: string }).lastName
-        token.studentId = (user as { studentId?: string }).studentId
+        token.id = user.id;
+        token._id = user.id;
+        token.role = user.role;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.studentId = user.studentId;
+        token.username = user.username;
       }
-      return token
+
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id   = token.id   as string
-        session.user.role = token.role as string | undefined
-        session.user.firstName = token.firstName as string | undefined
-        session.user.lastName = token.lastName as string | undefined
-        session.user.studentId = token.studentId as string | undefined
+        session.user.id = token.id;
+        session.user._id = token.id;
+        session.user.role = token.role;
+        session.user.firstName = token.firstName;
+        session.user.lastName = token.lastName;
+        session.user.studentId = token.studentId;
+        session.user.username = token.username;
       }
-      return session
+
+      return session;
     },
   },
- 
   pages: {
     signIn: "/login",
   },
- 
-  secret: process.env.NEXTAUTH_SECRET || "dev-secret",
-}
+  secret: nextAuthSecret,
+};

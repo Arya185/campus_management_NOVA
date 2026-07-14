@@ -25,7 +25,7 @@ export function NewReleasePromo() {
           <div className="relative z-10">
             <div className="mt-8 text-center">
               <h2 className="text-4xl font-bold text-white mb-6">
-                Learn. Manage. Connect with ARC Campus.
+                Learn. Manage. Connect with NOVA Campus.
               </h2>
               <p className="text-white/60 mb-8">
                 The complete campus management solution for modern education.
@@ -66,7 +66,7 @@ export function NewReleasePromo() {
                           <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
                           <path d="M2 12h20"></path>
                         </svg>
-                        Join ARC Campus Today
+                        Join NOVA Campus Today
                       </p>
                     </div>
                     <div className="border-border flex size-[26px] items-center justify-center rounded-full border-2 transition-all ease-in-out group-hover:ml-2">
@@ -101,13 +101,13 @@ export function NewReleasePromo() {
               }}
               aria-hidden="true"
             >
-              ARC Campus
+              NOVA Campus
             </h1>
             <h1
               className="absolute inset-x-0 mt-[120px] text-center text-[100px] font-semibold text-primary sm:mt-[30px] sm:text-[190px] pointer-events-none"
               aria-hidden="true"
             >
-              Arc
+              NOVA
             </h1>
           </div>
         </div>

@@ -1,12 +1,12 @@
-# ARC - Agentic AI Learning & Academic Success Platform
+# NOVA - Agentic AI Learning & Academic Success Platform
 
-ARC gives every student a personal **Academic Success Agent** that reads their real timetable, attendance, assignments, and workload; creates an adaptive plan; asks for approval before changing anything; and learns from completed or missed sessions to improve the next plan.
+NOVA gives every student a personal **Academic Success Agent** that reads their real timetable, attendance, assignments, and workload; creates an adaptive plan; asks for approval before changing anything; and learns from completed or missed sessions to improve the next plan.
 
 ---
 
 ## 🎯 Overview
 
-ARC has evolved into a focused educational AI platform centered on the flagship **Academic Success Agent**. Instead of disconnected tools for campus management, ARC provides an intelligent, grounded agent that reasons over real academic data and helps students succeed through structured planning, reflection, and adaptation.
+NOVA has evolved into a focused educational AI platform centered on flagship **Academic Success Agent**. Instead of disconnected tools for campus management, NOVA provides an intelligent, grounded agent that reasons over real academic data and helps students succeed through structured planning, reflection, and adaptation.
 
 ---
 
@@ -65,8 +65,8 @@ _All agent activity is transparently logged in an "Agent Activity" trace, but ra
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/ansh-10-p/CODEKNIGHT_ARC.git
-   cd CODEKNIGHT_ARC
+   git clone https://github.com/ansh-10-p/CODEKNIGHT_NOVA.git
+   cd CODEKNIGHT_NOVA
    ```
 
 2. **Install Dependencies**

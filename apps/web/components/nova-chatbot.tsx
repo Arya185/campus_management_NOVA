@@ -12,15 +12,15 @@ interface Message {
   content: string;
   source?: string;
 }
-interface ArcChatbotProps {
+interface NovaChatbotProps {
   userRole?: "student" | "teacher" | "admin";
   timetable?: any;
 }
 
-export function ArcChatbot({
+export function NovaChatbot({
   userRole = "student",
   timetable,
-}: ArcChatbotProps) {
+}: NovaChatbotProps) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -48,8 +48,8 @@ export function ArcChatbot({
     };
     const topics = roleGreetings[userRole] ?? roleGreetings.student;
     const greeting = userName
-      ? `Hi ${userName}! I'm ARC AI. Ask me about ${topics}.`
-      : `Hi! I'm ARC AI. Ask me about ${topics}.`;
+      ? `Hi ${userName}! I'm NOVA AI. Ask me about ${topics}.`
+      : `Hi! I'm NOVA AI. Ask me about ${topics}.`;
     setMessages([
       { id: "0", role: "ai", content: greeting, source: "general" },
     ]);
@@ -92,7 +92,7 @@ export function ArcChatbot({
         {
           id: (Date.now() + 1).toString(),
           role: "ai",
-          content: "Sorry, ARC AI is unavailable right now.",
+          content: "Sorry, NOVA AI is unavailable right now.",
         },
       ]);
     } finally {
@@ -106,7 +106,7 @@ export function ArcChatbot({
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-6 right-6 z-50 bg-[#e78a53] hover:bg-[#d4784a] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors"
-          aria-label="Open ARC AI chat"
+          aria-label="Open NOVA AI chat"
         >
           <Sparkles className="h-6 w-6" />
         </button>
@@ -116,7 +116,7 @@ export function ArcChatbot({
           <div className="flex items-center justify-between px-4 py-3 bg-zinc-800 border-b border-zinc-700">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[#e78a53]" />
-              <span className="text-white font-semibold text-sm">ARC AI</span>
+              <span className="text-white font-semibold text-sm">NOVA AI</span>
               <Badge
                 variant="outline"
                 className="text-[10px] border-green-500 text-green-400"

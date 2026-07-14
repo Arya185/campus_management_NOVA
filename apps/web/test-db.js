@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const uri = "mongodb+srv://nova_app_user:aryamahi09@nova.jvuuzos.mongodb.net/?appName=NOVA".trim();
 
 mongoose.connect(uri, {
-  dbName: "ARC",
+  dbName: "NOVA",
   bufferCommands: false,
   serverSelectionTimeoutMS: 10000,
 })

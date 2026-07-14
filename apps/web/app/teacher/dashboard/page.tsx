@@ -102,8 +102,9 @@ export default function TeacherDashboardPage() {
     }, [currentUser])
 
     const fetchClassrooms = async () => {
+        if (!currentUser) return
         try {
-            const response = await fetch(`/api/classrooms?teacherId=${currentUser._id || currentUser.id}`)
+            const response = await fetch(`/api/classrooms?teacherId=${currentUser.id}`)
             if (response.ok) {
                 const data = await response.json()
                 setClassrooms(data.classrooms || [])
@@ -420,5 +421,4 @@ export default function TeacherDashboardPage() {
         </div>
     )
 }
-
 

@@ -4,9 +4,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "@/components/providers"
 
 export const metadata: Metadata = {
-  title: "Campus Management",
-  description: "Smart campus management system",
-}
+  title: "NOVA Campus",
+  description: "Production-ready campus management platform for students, teachers, and admins.",
+};
 
 export default function RootLayout({
   children,

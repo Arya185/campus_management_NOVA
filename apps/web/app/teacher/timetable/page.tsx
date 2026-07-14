@@ -38,7 +38,7 @@ import {
   getCurrentTeacherId, 
   getCurrentTeacherInfo, 
   redirectIfNotAuthenticated 
-} from "@/lib/auth-middleware"
+} from "@/lib/auth-client"
 
 interface Lecture {
   _id: string

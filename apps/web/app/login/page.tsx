@@ -20,8 +20,8 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("rahul.sharma@student.edu");
-  const [password, setPassword] = useState("Password@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState<"student" | "teacher" | "admin">(
     "student",
   );
@@ -97,7 +97,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
             <span className="text-[#e78a53] font-bold tracking-tight text-2xl">
-              ARC Campus
+              NOVA Campus
             </span>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>

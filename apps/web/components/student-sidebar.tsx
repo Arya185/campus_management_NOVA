@@ -54,7 +54,7 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
           href="/student/dashboard"
           className="text-[#e78a53] font-bold text-xl"
         >
-          ARC Campus
+          NOVA Campus
         </Link>
         <p className="text-zinc-400 text-sm mt-1">Student Portal</p>
       </div>

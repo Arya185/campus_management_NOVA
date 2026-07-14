@@ -119,7 +119,7 @@ export function EventBookingDialog({
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: bookingData.razorpayOrder.amount,
       currency: bookingData.razorpayOrder.currency,
-      name: "ARC Campus Events",
+      name: "NOVA Campus Events",
       description: `${event?.title} - Registration`,
       order_id: bookingData.razorpayOrder.id,
       handler: async (response: any) => {

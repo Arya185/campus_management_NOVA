@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArcChatbot } from "@/components/arc-chatbot"
+import { NovaChatbot } from "@/components/nova-chatbot"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { StudentSidebar } from "@/components/student-sidebar"
@@ -113,7 +113,7 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-black flex">
       <StudentSidebar />
-      <ArcChatbot userRole="student" />
+      <NovaChatbot userRole="student" />
       <main className="flex-1 overflow-auto">
 
         {/* Header */}

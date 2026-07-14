@@ -168,11 +168,12 @@ export default function StudentSchedulePage() {
 
     const fetchScheduleData = async (weekStartDate: string, classroomId?: string) => {
         if (!currentUser) return
+        const studentId = currentUser.id
 
         setLoading(true)
         try {
             const params = new URLSearchParams({
-                studentId: currentUser._id || currentUser.id,
+                studentId,
                 weekStartDate
             })
 

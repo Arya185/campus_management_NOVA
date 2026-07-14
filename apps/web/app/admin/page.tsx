@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from 'react'
-import { isAuthenticatedAdmin } from '@/lib/auth-middleware'
+import { isAuthenticatedAdmin } from '@/lib/auth-client'
 
 export default function AdminPage() {
   useEffect(() => {

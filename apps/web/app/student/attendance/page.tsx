@@ -108,11 +108,12 @@ export default function StudentAttendancePage() {
 
   const fetchAttendanceData = async (classroomId?: string) => {
     if (!currentUser) return
+    const studentId = currentUser.id
 
     setLoading(true)
 
     console.log("=== FRONTEND ATTENDANCE DEBUG ===");
-    console.log("Current user:", currentUser._id || currentUser.id);
+    console.log("Current user:", studentId);
     console.log("Selected classroom:", classroomId);
     console.log("Start date:", startDate);
     console.log("End date:", endDate);
@@ -120,7 +121,7 @@ export default function StudentAttendancePage() {
 
     try {
       const params = new URLSearchParams({
-        studentId: currentUser._id || currentUser.id,
+        studentId,
       })
 
       if (classroomId) params.append('classroomId', classroomId)

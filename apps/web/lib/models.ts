@@ -57,6 +57,17 @@ const TeacherSchema = new Schema(
   { timestamps: true }
 );
 
+const AdminSchema = new Schema(
+  {
+    username: { type: String, required: true, unique: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    role: { type: String, default: "admin" },
+  },
+  { timestamps: true }
+);
+
 const TimetableSchema = new Schema(
   {
     teacherId: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
@@ -457,6 +468,7 @@ ClassroomEnrollmentSchema.index(
 
 export const StudentModel = models.Student || model("Student", StudentSchema);
 export const TeacherModel = models.Teacher || model("Teacher", TeacherSchema);
+export const AdminModel = models.Admin || model("Admin", AdminSchema);
 export const TimetableModel =
   models.Timetable || model("Timetable", TimetableSchema);
 

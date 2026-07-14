@@ -44,7 +44,7 @@ export default function SignupPage() {
           className="text-center mb-16"
         >
           <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
-            Join ARC Campus
+            Join NOVA Campus
           </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
             Choose your role to get started with our comprehensive campus
@@ -59,7 +59,7 @@ export default function SignupPage() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="w-full max-w-6xl"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Student Card */}
             <motion.div
               whileHover={{ scale: 1.02, y: -5 }}
@@ -166,6 +166,64 @@ export default function SignupPage() {
                       <div className="mt-8">
                         <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#e78a53] to-[#e78a53]/80 text-white rounded-full text-lg font-semibold group-hover:from-[#e78a53]/90 group-hover:to-[#e78a53] transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#e78a53]/25">
                           Get Started
+                          <svg
+                            className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Admin Card */}
+            <motion.div
+              whileHover={{ scale: 1.02, y: -5 }}
+              transition={{ duration: 0.3 }}
+              className="group"
+            >
+              <Link href="/admin/login" className="block h-full">
+                <div className="h-full min-h-[500px] bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 backdrop-blur-xl border border-zinc-700/50 rounded-3xl p-12 hover:border-[#e78a53]/60 hover:bg-gradient-to-br hover:from-[#e78a53]/5 hover:to-zinc-800/60 transition-all duration-500 cursor-pointer text-center group-hover:shadow-2xl group-hover:shadow-[#e78a53]/20">
+                  <div className="flex flex-col items-center gap-10 h-full justify-center">
+                    <div className="relative">
+                      <div className="p-12 bg-gradient-to-br from-[#e78a53]/20 to-[#e78a53]/10 rounded-full group-hover:from-[#e78a53]/30 group-hover:to-[#e78a53]/20 transition-all duration-500 group-hover:scale-110">
+                        <svg
+                          className="w-20 h-20 text-[#e78a53]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 0h10.5A2.25 2.25 0 0 1 19.5 12.75v6A2.25 2.25 0 0 1 17.25 21h-10.5A2.25 2.25 0 0 1 4.5 18.75v-6A2.25 2.25 0 0 1 6.75 10.5Z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <h3 className="text-4xl font-bold text-white group-hover:text-[#e78a53] transition-colors duration-300">
+                        Admin
+                      </h3>
+                      <p className="text-zinc-300 text-lg leading-relaxed max-w-sm mx-auto">
+                        Manage platform operations, campus data, events, and institutional settings
+                      </p>
+                      <div className="mt-8">
+                        <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#e78a53] to-[#e78a53]/80 text-white rounded-full text-lg font-semibold group-hover:from-[#e78a53]/90 group-hover:to-[#e78a53] transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#e78a53]/25">
+                          Access Dashboard
                           <svg
                             className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300"
                             fill="none"

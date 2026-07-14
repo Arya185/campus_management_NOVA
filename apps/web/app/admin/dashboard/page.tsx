@@ -15,7 +15,7 @@ import {
   Loader2,
   Shield
 } from "lucide-react"
-import { redirectIfNotAuthenticatedAdmin, getCurrentAdminInfo } from '@/lib/auth-middleware'
+import { redirectIfNotAuthenticatedAdmin, getCurrentAdminInfo } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 
 export default function AdminDashboard() {

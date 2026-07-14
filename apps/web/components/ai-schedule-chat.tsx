@@ -9,6 +9,28 @@ import { Badge } from "@/components/ui/badge"
 import { Mic, MicOff, Send, Sparkles, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+type SpeechRecognitionResultEvent = Event & {
+    resultIndex: number
+    results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }>
+}
+
+type SpeechRecognitionErrorEvent = Event & {
+    error: string
+}
+
+type BrowserSpeechRecognition = {
+    continuous: boolean
+    interimResults: boolean
+    lang: string
+    onresult: ((event: SpeechRecognitionResultEvent) => void) | null
+    onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+    onend: (() => void) | null
+    start: () => void
+    stop: () => void
+}
+
+type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition
+
 interface AIScheduleChatProps {
     isOpen: boolean
     onClose: () => void
@@ -25,12 +47,20 @@ export function AIScheduleChat({ isOpen, onClose, onScheduleGenerated, classroom
     const [isListening, setIsListening] = useState(false)
     const [isGenerating, setIsGenerating] = useState(false)
     const [messages, setMessages] = useState<Array<{ id: string, type: 'user' | 'ai', content: string }>>([])
-    const recognitionRef = useRef<SpeechRecognition | null>(null)
+    const recognitionRef = useRef<BrowserSpeechRecognition | null>(null)
     const { toast } = useToast()
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+        const speechWindow = window as Window & {
+            SpeechRecognition?: SpeechRecognitionConstructor
+            webkitSpeechRecognition?: SpeechRecognitionConstructor
+        }
+
+        if (typeof window !== 'undefined' && (speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition)) {
+            const SpeechRecognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition
+            if (!SpeechRecognition) {
+                return
+            }
             recognitionRef.current = new SpeechRecognition()
 
             if (recognitionRef.current) {
@@ -38,7 +68,7 @@ export function AIScheduleChat({ isOpen, onClose, onScheduleGenerated, classroom
                 recognitionRef.current.interimResults = true
                 recognitionRef.current.lang = 'en-US'
 
-                recognitionRef.current.onresult = (event) => {
+                recognitionRef.current.onresult = (event: SpeechRecognitionResultEvent) => {
                     let transcript = ''
                     for (let i = event.resultIndex; i < event.results.length; i++) {
                         if (event.results[i].isFinal) {
@@ -50,7 +80,7 @@ export function AIScheduleChat({ isOpen, onClose, onScheduleGenerated, classroom
                     }
                 }
 
-                recognitionRef.current.onerror = (event) => {
+                recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
                     console.error('Speech recognition error:', event.error)
                     setIsListening(false)
                     toast({

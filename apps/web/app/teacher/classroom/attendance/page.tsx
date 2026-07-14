@@ -80,8 +80,9 @@ export default function TeacherAttendancePage() {
     }, [])
 
     const fetchClassrooms = async () => {
+        if (!currentUser) return
         try {
-            const response = await fetch(`/api/classrooms?teacherId=${currentUser._id || currentUser.id}`)
+            const response = await fetch(`/api/classrooms?teacherId=${currentUser.id}`)
             if (response.ok) {
                 const data = await response.json()
                 setClassrooms(data.classrooms || [])
@@ -100,7 +101,7 @@ export default function TeacherAttendancePage() {
         try {
             const dateParam = selectedDate || date
             const response = await fetch(
-                `/api/teacher/attendance?teacherId=${currentUser._id || currentUser.id}&classroomId=${classroomId}&date=${dateParam}`
+                `/api/teacher/attendance?teacherId=${currentUser.id}&classroomId=${classroomId}&date=${dateParam}`
             )
 
             if (response.ok) {
@@ -175,6 +176,7 @@ export default function TeacherAttendancePage() {
     }
 
     const saveAttendance = async () => {
+        if (!currentUser) return
         if (!selectedClassroom || !subjectName || !date || attendanceData.size === 0) {
             toast({
                 title: "Error",
@@ -197,7 +199,7 @@ export default function TeacherAttendancePage() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    teacherId: currentUser._id || currentUser.id,
+                    teacherId: currentUser.id,
                     classroomId: selectedClassroom._id,
                     subjectName,
                     date,

@@ -4,7 +4,7 @@ import { StudentModel, TimetableModel, AttendanceModel, AssignmentModel, StudyPl
 export async function getStudentTimetable(studentId: string) {
   await connectToDatabase();
   
-  const student = await StudentModel.findById(studentId).lean();
+  const student = (await StudentModel.findById(studentId).lean()) as any;
   if (!student) {
     throw new Error(`Student not found with ID: ${studentId}`);
   }
@@ -141,7 +141,7 @@ function validateTime(timeStr: string) {
 export async function proposeStudyPlan(studentId: string, input: StudyPlanInput) {
   await connectToDatabase();
 
-  const student = await StudentModel.findById(studentId).lean();
+  const student = (await StudentModel.findById(studentId).lean()) as any;
   if (!student) throw new Error(`Student not found with ID: ${studentId}`);
   if (!input.goal) throw new Error("Study plan requires a goal");
   if (!input.sessions || input.sessions.length === 0) throw new Error("Study plan requires at least one session");
@@ -319,4 +319,3 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
     ]
   };
 }
-

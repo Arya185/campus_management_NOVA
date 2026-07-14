@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const student = await connectToDatabase().then(async () => {
       const { StudentModel } = await import("@/lib/models");
-      return await StudentModel.findOne({ studentId: session.user.id }).lean();
+      return (await StudentModel.findById(session.user.id).lean()) as any;
     });
 
     if (!student) {

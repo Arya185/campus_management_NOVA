@@ -52,7 +52,7 @@ export function TeacherSidebar({ className = "" }: SidebarProps) {
           href="/teacher/dashboard"
           className="text-[#e78a53] font-bold text-xl"
         >
-          ARC Campus
+          NOVA Campus
         </Link>
         <p className="text-zinc-400 text-sm mt-1">Teacher Portal</p>
       </div>
