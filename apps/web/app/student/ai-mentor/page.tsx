@@ -1,40 +1,132 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { StudentSidebar } from "@/components/student-sidebar"
-import { UserMenu } from "@/components/user-menu"
-import CallButton from "@/components/ai-mentor/CallButton"
+import React, { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { StudentSidebar } from "@/components/student-sidebar";
+import { UserMenu } from "@/components/user-menu";
 import {
   Bell,
-  ChevronRight,
-  Phone,
-  PhoneCall,
-  MessageSquare,
-  Info,
+  Send,
+  Loader2,
   CheckCircle2,
-  User
-} from "lucide-react"
+  AlertCircle,
+  Brain,
+  Calendar,
+  Clock,
+  BookOpen
+} from "lucide-react";
+
+type Message = {
+  id: string;
+  role: "user" | "agent";
+  content: string;
+  activityLog?: string[];
+  planId?: string;
+  actionId?: string;
+  status?: "pending" | "approved" | "rejected";
+};
 
 export default function AiMentor() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "welcome",
+      role: "agent",
+      content: "Hello! I am your Academic Success Agent. I can help you check your timetable, review your attendance risk, track deadlines, or plan your study week. What would you like to do?"
+    }
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = { id: Date.now().toString(), role: "user", content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/student/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: userMessage.content })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to process request");
+      }
+
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: "agent",
+        content: data.reply,
+        activityLog: data.activityLog,
+        planId: data.planId,
+        actionId: data.actionId,
+        status: data.actionId ? "pending" : undefined
+      }]);
+    } catch (error: any) {
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: "agent",
+        content: `Error: ${error.message}. Please try again.`
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAction = async (msgId: string, actionId: string, status: "approved" | "rejected") => {
+    try {
+      const response = await fetch("/api/student/agent/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actionId, status })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to resolve action");
+
+      setMessages(prev => prev.map(msg => 
+        msg.id === msgId ? { ...msg, status } : msg
+      ));
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black flex">
       <StudentSidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Header */}
-        <header className="bg-zinc-900/30 backdrop-blur-sm border-b border-zinc-800 sticky top-0 z-10">
-          <div className="px-8 py-6">
+        <header className="bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800 z-10 flex-shrink-0">
+          <div className="px-8 py-4">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">AI Mentor</h1>
-                <p className="text-zinc-400">Connect with your AI assistant for personalized help</p>
+                <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                  <Brain className="h-6 w-6 text-[#e78a53]" />
+                  Academic Success Agent
+                </h1>
+                <p className="text-zinc-400 text-sm">Your personal AI for academic planning and success</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon">
                   <Bell className="h-5 w-5 text-zinc-400" />
                 </Button>
@@ -44,200 +136,137 @@ export default function AiMentor() {
           </div>
         </header>
 
-        {/* AI Mentor Content */}
-        <div className="p-8">
-          {/* AI Mentor Call Section */}
-          <div className="mb-10">
-            <Card className="bg-zinc-900/50 border-zinc-800 hover:border-[#e78a53]/40 transition-colors">
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Left side - Call information */}
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-xl font-semibold text-white mb-3">Connect with your Campus Map AI</h3>
-                      <p className="text-zinc-400">
-                        Experience a live phone conversation for personalized guidance and learning support.
-                      </p>
+        {/* Chat Area */}
+        <div className="flex-1 overflow-y-auto p-8 space-y-6">
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-3xl ${msg.role === "user" ? "bg-[#e78a53] text-black" : "bg-zinc-900 text-zinc-200 border border-zinc-800"} rounded-2xl p-6 shadow-lg`}>
+                
+                {/* Agent Activity Log */}
+                {msg.activityLog && msg.activityLog.length > 0 && (
+                  <div className="mb-4 pb-4 border-b border-zinc-800/50 space-y-2">
+                    <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                      <Brain className="h-3 w-3" /> Agent Activity
                     </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label htmlFor="phoneNumber" className="text-sm text-zinc-400">
-                          Enter your number and receive a call from your AI Mentor
-                        </label>
-                        <div className="bg-zinc-800/50 rounded-md p-4 border border-[#e78a53]/30">
-                          <CallButton />
-                        </div>
+                    {msg.activityLog.map((log, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-zinc-400">
+                        <CheckCircle2 className="h-4 w-4 text-[#e78a53]/70" />
+                        {log}
                       </div>
-                    </div>
+                    ))}
                   </div>
+                )}
 
-                  {/* Right side - How it works */}
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                        <Info className="h-5 w-5 mr-2 text-[#e78a53]" />
-                        How It Works
-                      </h3>
-                      <p className="text-zinc-400 mb-4">
-                        Experience real-time conversation with advanced AI
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 bg-[#e78a53]/20 rounded-full flex items-center justify-center">
-                          <span className="text-[#e78a53] font-bold">1</span>
-                        </div>
-                        <div>
-                          <h4 className="text-white font-medium">Enter Your Number</h4>
-                          <p className="text-zinc-400 text-sm">Provide your phone number in international format</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 bg-[#e78a53]/20 rounded-full flex items-center justify-center">
-                          <span className="text-[#e78a53] font-bold">2</span>
-                        </div>
-                        <div>
-                          <h4 className="text-white font-medium">Receive AI Call</h4>
-                          <p className="text-zinc-400 text-sm">Our AI system will call you within seconds</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 bg-[#e78a53]/20 rounded-full flex items-center justify-center">
-                          <span className="text-[#e78a53] font-bold">3</span>
-                        </div>
-                        <div>
-                          <h4 className="text-white font-medium">Start Conversing</h4>
-                          <p className="text-zinc-400 text-sm">Speak naturally - the AI understands and responds</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                {/* Message Content */}
+                <div className="whitespace-pre-wrap leading-relaxed">
+                  {msg.content}
                 </div>
 
-                {/* Use cases section */}
-                <div className="mt-8 pt-8 border-t border-zinc-800">
-                  <h3 className="text-xl font-semibold text-white mb-6">
-                    <MessageSquare className="h-5 w-5 inline-block mr-2 text-[#e78a53]" />
-                    Example Use Cases
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Student Use Cases */}
-                    <Card className="bg-zinc-900/70 border-zinc-800 hover:border-[#e78a53]/30 transition-colors">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-[#e78a53]/10 text-[#e78a53] border-[#e78a53]/30 border">Student</Badge>
-                        </div>
-                        <CardTitle className="text-white text-md">🎓 Student Queries</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 text-zinc-400 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Where is the Exam Cell?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Mujhe Library ka rasta batao from Main Entrance."</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Today ka timetable kya hai for FE Computer?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Can I pre-order Cold Coffee for 1:30?"</span>
-                          </li>
-                        </ul>
-                      </CardContent>
-                    </Card>
-
-                    {/* More Student Use Cases */}
-                    <Card className="bg-zinc-900/70 border-zinc-800 hover:border-[#e78a53]/30 transition-colors">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-[#e78a53]/10 text-[#e78a53] border-[#e78a53]/30 border">Student+</Badge>
-                        </div>
-                        <CardTitle className="text-white text-md">🎓 More Student Queries</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 text-zinc-400 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Freshers' Mixer kab aur kahan ho raha hai?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Available internships abhi kaun se hai?"</span>
-                          </li>
-                        </ul>
-                      </CardContent>
-                    </Card>
-
-                    {/* Teacher Use Cases */}
-                    <Card className="bg-zinc-900/70 border-zinc-800 hover:border-[#e78a53]/30 transition-colors">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-[#e78a53]/10 text-[#e78a53] border-[#e78a53]/30 border">Teacher</Badge>
-                        </div>
-                        <CardTitle className="text-white text-md">👩‍🏫 Teacher Queries</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 text-zinc-400 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Mark attendance for SE Comp 10 am slot."</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Mere teaching slots Tuesday ko kaunse hain?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Can I pre-order Paneer Roll for lunch?"</span>
-                          </li>
-                        </ul>
-                      </CardContent>
-                    </Card>
-
-                    {/* Canteen & Admin Use Cases */}
-                    <Card className="bg-zinc-900/70 border-zinc-800 hover:border-[#e78a53]/30 transition-colors">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-[#e78a53]/10 text-[#e78a53] border-[#e78a53]/30 border">Canteen & Admin</Badge>
-                        </div>
-                        <CardTitle className="text-white text-md">🍲 Canteen & 🛠️ Admin</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2 text-zinc-400 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"How many Veg Sandwiches are in stock?"</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Show me today's queued orders."</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Add a new event on 20th Sept, 2 pm, Seminar Hall."</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-[#e78a53] mt-0.5" />
-                            <span>"Post internship opening for Data Science."</span>
-                          </li>
-                        </ul>
-                      </CardContent>
-                    </Card>
+                {/* Proposed Action / Study Plan */}
+                {msg.actionId && msg.status && (
+                  <div className="mt-6 border border-zinc-700/50 rounded-xl overflow-hidden bg-black/20">
+                    <div className="bg-zinc-800/50 px-4 py-3 flex items-center justify-between border-b border-zinc-700/50">
+                      <div className="flex items-center gap-2 text-white font-medium">
+                        <Calendar className="h-4 w-4 text-[#e78a53]" />
+                        Proposed Study Plan
+                      </div>
+                      <Badge 
+                        className={
+                          msg.status === "pending" ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/20" :
+                          msg.status === "approved" ? "bg-green-500/20 text-green-500 hover:bg-green-500/20" :
+                          "bg-red-500/20 text-red-500 hover:bg-red-500/20"
+                        }
+                      >
+                        {msg.status.toUpperCase()}
+                      </Badge>
+                    </div>
+                    
+                    {msg.status === "pending" && (
+                      <div className="p-4 bg-zinc-900/30 flex gap-3">
+                        <Button 
+                          onClick={() => handleAction(msg.id, msg.actionId!, "approved")}
+                          className="bg-[#e78a53] hover:bg-[#d67a43] text-black flex-1"
+                        >
+                          Approve Plan
+                        </Button>
+                        <Button 
+                          onClick={() => handleAction(msg.id, msg.actionId!, "rejected")}
+                          variant="outline" 
+                          className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 flex-1"
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                    {msg.status === "approved" && (
+                      <div className="p-4 bg-green-500/10 text-green-500 text-sm flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4" /> This plan has been approved and added to your schedule.
+                      </div>
+                    )}
+                    {msg.status === "rejected" && (
+                      <div className="p-4 bg-red-500/10 text-red-500 text-sm flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" /> This proposal was rejected.
+                      </div>
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                )}
+
+              </div>
+            </div>
+          ))}
+          
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-lg flex items-center gap-3 text-zinc-400">
+                <Loader2 className="h-5 w-5 animate-spin text-[#e78a53]" />
+                Agent is thinking and analyzing your data...
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Suggested Actions (Empty state helpers) */}
+        {messages.length === 1 && (
+          <div className="px-8 pb-4 grid grid-cols-2 lg:grid-cols-4 gap-4 flex-shrink-0">
+            {[
+              { icon: Clock, text: "What is my timetable like this week?" },
+              { icon: AlertCircle, text: "Review my attendance risk" },
+              { icon: BookOpen, text: "What are my upcoming deadlines?" },
+              { icon: Calendar, text: "Plan my exam week" }
+            ].map((suggestion, idx) => (
+              <Button
+                key={idx}
+                variant="outline"
+                className="bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-[#e78a53]/50 justify-start h-auto py-3 px-4"
+                onClick={() => setInput(suggestion.text)}
+              >
+                <suggestion.icon className="h-4 w-4 mr-2 text-[#e78a53]" />
+                <span className="text-left text-sm truncate">{suggestion.text}</span>
+              </Button>
+            ))}
           </div>
+        )}
+
+        {/* Input Area */}
+        <div className="p-8 pt-4 flex-shrink-0 bg-gradient-to-t from-black via-black to-transparent">
+          <form onSubmit={handleSubmit} className="relative max-w-4xl mx-auto">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask your Academic Agent..."
+              className="w-full bg-zinc-900/80 border-zinc-700 text-white placeholder:text-zinc-500 pl-6 pr-16 py-8 rounded-full shadow-2xl focus-visible:ring-[#e78a53]"
+              disabled={isLoading}
+            />
+            <Button 
+              type="submit" 
+              size="icon"
+              disabled={!input.trim() || isLoading}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-[#e78a53] hover:bg-[#d67a43] text-black h-10 w-10"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </form>
         </div>
       </main>
     </div>
