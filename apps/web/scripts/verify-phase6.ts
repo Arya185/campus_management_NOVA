@@ -65,12 +65,13 @@ async function verify() {
     });
     console.log(`PASS: Reschedule proposed successfully. Action ID: ${proposal.actionId}`);
     
-    // Verify the new session was added as planned
-    const updatedPlan3 = await StudyPlanModel.findById(planId);
-    if (updatedPlan3?.sessions.length !== 3) {
-      console.error("FAIL: New session not appended to plan");
+    // Boundary check 1: Verify the new session was NOT added to the plan while pending
+    const boundaryPlan1 = await StudyPlanModel.findById(planId);
+    if (boundaryPlan1?.sessions.length !== 2) {
+      console.error("FAIL: Boundary violation! Session was appended to plan before approval.");
       process.exit(1);
     }
+    console.log("PASS: Pending reschedule did not mutate active plan schedule.");
 
     console.log("--- Testing Unauthorized Action Resolution ---");
     const otherStudentId = new mongoose.Types.ObjectId().toString();
@@ -86,6 +87,16 @@ async function verify() {
         process.exit(1);
       }
     }
+
+    console.log("--- Testing Reschedule Approval Boundary ---");
+    // Boundary check 2: Verify the session is added when approved
+    await resolveAgentAction(studentId, proposal.actionId, "approved");
+    const boundaryPlan2 = await StudyPlanModel.findById(planId);
+    if (boundaryPlan2?.sessions.length !== 3) {
+      console.error("FAIL: New session was not appended to plan upon approval");
+      process.exit(1);
+    }
+    console.log("PASS: Rescheduled session was correctly appended upon approval.");
 
     console.log("\nPhase 6 Verification Successful.");
     process.exit(0);

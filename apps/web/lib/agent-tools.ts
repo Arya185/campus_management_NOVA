@@ -216,12 +216,24 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
       if (action.actionType === "create_plan") {
         plan.status = status;
         await plan.save();
-      } else if (action.actionType === "reschedule_session" && status === "approved") {
-        // We parse the summary/rationale or ideally an embedded payload, but here we can just add the session
-        // However, for simplicity let's assume the session was already appended in "planned" state or we store it in AgentAction.
-        // Let's implement this properly: action has a new session payload. But AgentActionSchema doesn't have a payload field.
-        // Let's just say for MVP, if approved, we change the plan status or update a session. 
-        // Actually, we can store the new session details in `rationale` as JSON, or we can just update the plan.
+      } else if (action.actionType === "reschedule_session") {
+        if (status === "approved" && action.rationale) {
+          try {
+            const newSession = JSON.parse(action.rationale);
+            plan.sessions.push({
+              title: newSession.title,
+              date: newSession.date,
+              startTime: newSession.startTime,
+              endTime: newSession.endTime,
+              subject: newSession.subject,
+              topics: newSession.topics,
+              status: "planned"
+            });
+            await plan.save();
+          } catch (e) {
+            console.error("Failed to parse reschedule session payload");
+          }
+        }
       }
     }
   }
@@ -280,28 +292,11 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
     throw new Error(`Start time must be before end time`);
   }
 
-  // To support reschedule via the existing AgentAction model which lacks a custom payload field,
-  // we will add the new session to the StudyPlan immediately in "pending" status (by extending the enum or just leaving it planned and relying on the plan status? No, sessions enum is ["planned", "completed", "skipped", "pending"]).
-  // Wait, session status enum in model is ["planned", "completed", "skipped"].
-  // We can just add it as "planned" but it won't be "active" until the AgentAction is approved?
-  // Let's just add it as "planned" and create an AgentAction for audit.
-  
-  plan.sessions.push({
-    title: newSession.title,
-    date: newSession.date,
-    startTime: newSession.startTime,
-    endTime: newSession.endTime,
-    subject: newSession.subject,
-    topics: newSession.topics,
-    status: "planned"
-  });
-  await plan.save();
-
   const agentAction = await AgentActionModel.create({
     studentId,
     actionType: "reschedule_session",
     summary: `Proposed rescheduling session: ${newSession.title} on ${newSession.date}`,
-    rationale: "Automated reschedule based on skipped session.",
+    rationale: JSON.stringify(newSession),
     status: "pending",
     planId: plan._id
   });
@@ -313,7 +308,7 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
     planId: plan._id.toString(),
     sessions: [
       {
-        id: plan.sessions[plan.sessions.length - 1]._id.toString(),
+        id: "pending-" + Date.now(),
         title: newSession.title,
         date: newSession.date,
         startTime: newSession.startTime,
