@@ -781,6 +781,7 @@ const AgentActionSchema = new Schema(
     summary: { type: String, required: true },
     activityLog: [{ type: String }], // Tool usage summaries
     rationale: { type: String },
+    payload: { type: Schema.Types.Mixed },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

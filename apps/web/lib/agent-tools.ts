@@ -217,9 +217,9 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
         plan.status = status;
         await plan.save();
       } else if (action.actionType === "reschedule_session") {
-        if (status === "approved" && action.rationale) {
+        if (status === "approved" && action.payload) {
           try {
-            const newSession = JSON.parse(action.rationale);
+            const newSession = typeof action.payload === 'string' ? JSON.parse(action.payload) : action.payload;
             plan.sessions.push({
               title: newSession.title,
               date: newSession.date,
@@ -231,7 +231,7 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
             });
             await plan.save();
           } catch (e) {
-            console.error("Failed to parse reschedule session payload");
+            console.error("Failed to parse reschedule session payload", e);
           }
         }
       }
@@ -296,7 +296,8 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
     studentId,
     actionType: "reschedule_session",
     summary: `Proposed rescheduling session: ${newSession.title} on ${newSession.date}`,
-    rationale: JSON.stringify(newSession),
+    rationale: "Automated reschedule based on skipped session.",
+    payload: newSession,
     status: "pending",
     planId: plan._id
   });
