@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 export function NewReleasePromo() {
   return (
@@ -9,7 +9,8 @@ export function NewReleasePromo() {
           <div
             className="absolute inset-0 z-0"
             style={{
-              background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 64, 23, 0.1), transparent 70%)",
+              background:
+                "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 64, 23, 0.1), transparent 70%)",
             }}
           />
 
@@ -23,8 +24,12 @@ export function NewReleasePromo() {
 
           <div className="relative z-10">
             <div className="mt-8 text-center">
-              <h2 className="text-4xl font-bold text-white mb-6">Learn. Manage. Connect with Arc Campus.</h2>
-              <p className="text-white/60 mb-8">The complete campus management solution for modern education.</p>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Learn. Manage. Connect with ARC Campus.
+              </h2>
+              <p className="text-white/60 mb-8">
+                The complete campus management solution for modern education.
+              </p>
               <svg
                 width="100"
                 height="50"
@@ -61,7 +66,7 @@ export function NewReleasePromo() {
                           <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
                           <path d="M2 12h20"></path>
                         </svg>
-                        Join Arc Campus Today
+                        Join ARC Campus Today
                       </p>
                     </div>
                     <div className="border-border flex size-[26px] items-center justify-center rounded-full border-2 transition-all ease-in-out group-hover:ml-2">
@@ -96,7 +101,7 @@ export function NewReleasePromo() {
               }}
               aria-hidden="true"
             >
-              Arc Campus
+              ARC Campus
             </h1>
             <h1
               className="absolute inset-x-0 mt-[120px] text-center text-[100px] font-semibold text-primary sm:mt-[30px] sm:text-[190px] pointer-events-none"
@@ -108,5 +113,5 @@ export function NewReleasePromo() {
         </div>
       </div>
     </section>
-  )
+  );
 }

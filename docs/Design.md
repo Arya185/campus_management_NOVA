@@ -12,10 +12,10 @@ one flagship agent: the **Academic Success Agent**.
 **Primary hackathon theme:** Education AI.
 
 **One-line pitch:**\
-*ARC gives every student a personal academic agent that reads their real
+_ARC gives every student a personal academic agent that reads their real
 timetable, attendance, assignments, and workload; creates an adaptive
 plan; asks for approval before changing anything; and learns from
-completed or missed sessions to improve the next plan.*
+completed or missed sessions to improve the next plan._
 
 ### MVP promise
 
@@ -27,11 +27,11 @@ approval → Act → Observe outcome → Adapt**
 The hackathon MVP is **not** a multi-agent platform. Additional agents
 remain future work.
 
-------------------------------------------------------------------------
+---
 
 ## 2. Information architecture
 
-``` text
+```text
 /login, /signup
   Student, Teacher, Institution/Admin only
 
@@ -62,7 +62,7 @@ remain future work.
 
 ### Remove completely
 
-``` text
+```text
 /canteen/**
 /student/food/**
 /teacher/food/**
@@ -78,22 +78,22 @@ homepage copy, and seed data.
 
 ### Not required for the submission demo
 
--   Teacher analytics
--   Admin AI governance UI
--   Multi-agent orchestration
--   Career, interview, research, project, or coding agents
--   Major visual redesign
+- Teacher analytics
+- Admin AI governance UI
+- Multi-agent orchestration
+- Career, interview, research, project, or coding agents
+- Major visual redesign
 
 These belong in the roadmap unless the flagship flow is already complete
 and the submission assets are finished.
 
-------------------------------------------------------------------------
+---
 
 ## 3. Minimal data model additions
 
 Use `lib/agent-models.ts` or extend the existing models cleanly.
 
-``` ts
+```ts
 // StudyPlan — structured output proposed by the agent
 {
   studentId: ObjectId,
@@ -147,25 +147,25 @@ log a "reasoning trace."
 
 Use:
 
--   **Agent Activity**
--   **Execution Trace**
--   **Decision Summary**
--   **Rationale Summary**
+- **Agent Activity**
+- **Execution Trace**
+- **Decision Summary**
+- **Rationale Summary**
 
 Store observable tool usage, concise results, decisions, and user-facing
 rationale.
 
 `User` role enum becomes:
 
-``` ts
-"student" | "teacher" | "admin"
+```ts
+"student" | "teacher" | "admin";
 ```
 
-------------------------------------------------------------------------
+---
 
 ## 4. Flagship agent architecture
 
-``` text
+```text
 User goal
 "Plan my exam week"
         │
@@ -205,7 +205,7 @@ Approval UI
 
 After approval, the student can mark a session:
 
-``` text
+```text
 Completed
 or
 Skipped
@@ -213,7 +213,7 @@ Skipped
 
 If a session is skipped:
 
-``` text
+```text
 Observe skipped session
         │
         ▼
@@ -235,21 +235,18 @@ This demonstrates:
 
 **Reason → Plan → Tool Use → Act → Observe → Reflect → Adapt**
 
-------------------------------------------------------------------------
+---
 
 ## 5. Tool contract
 
 Keep the tool layer small, typed, and easy to explain.
 
-``` ts
+```ts
 type AgentTool = {
   name: string;
   description: string;
   parameters: JSONSchema;
-  handler: (
-    input: unknown,
-    context: { studentId: string }
-  ) => Promise<unknown>;
+  handler: (input: unknown, context: { studentId: string }) => Promise<unknown>;
 };
 ```
 
@@ -263,7 +260,7 @@ the reflection loop is implemented
 
 Do not add more tools until the core flow works end-to-end.
 
-------------------------------------------------------------------------
+---
 
 ## 6. Student UX flow --- primary demo
 
@@ -272,14 +269,14 @@ Do not add more tools until the core flow works end-to-end.
     Agent** command bar.
 3.  Student enters: **"Plan my exam week."**
 4.  Agent Activity shows concise observable progress:
-    -   Checking timetable
-    -   Checking attendance
-    -   Checking upcoming assignments
+    - Checking timetable
+    - Checking attendance
+    - Checking upcoming assignments
 5.  Agent displays a structured study plan with:
-    -   subject
-    -   date/day
-    -   time
-    -   reason
+    - subject
+    - date/day
+    - time
+    - reason
 6.  Plan is clearly marked **Pending approval**.
 7.  Student approves it.
 8.  Approved sessions appear on the dashboard and/or timetable.
@@ -288,7 +285,7 @@ Do not add more tools until the core flow works end-to-end.
 
 This is the complete flagship demo.
 
-------------------------------------------------------------------------
+---
 
 ## 7. Teacher and Institution/Admin roles
 
@@ -300,11 +297,11 @@ hackathon submission**.
 Keep the existing working functionality and make only small framing
 changes:
 
--   Dashboard copy focused on teaching and student progress
--   Classroom
--   Attendance
--   Resources
--   Timetable
+- Dashboard copy focused on teaching and student progress
+- Classroom
+- Attendance
+- Resources
+- Timetable
 
 Do not build a new Teacher Copilot or analytics system before the
 flagship student agent is complete.
@@ -313,40 +310,40 @@ flagship student agent is complete.
 
 Keep:
 
--   User/institution management
--   Events
--   Internships
--   Resources
--   Existing academic administration that already works
+- User/institution management
+- Events
+- Internships
+- Resources
+- Existing academic administration that already works
 
 Remove canteen and parking references.
 
 A governance screen is **future work** unless the flagship flow and
 submission are already complete.
 
-------------------------------------------------------------------------
+---
 
 ## 8. Visual and UX principles
 
--   Keep the existing Radix/shadcn + Tailwind design system.
--   Do not spend hackathon time redesigning working pages.
--   Focus visual effort on:
-    -   unified agent command bar
-    -   Agent Activity
-    -   structured plan cards
-    -   approval/rejection states
-    -   completed/skipped session states
--   Use clear visual distinction for:
-    -   pending
-    -   approved
-    -   rejected
-    -   completed
-    -   skipped
--   Never display raw tool JSON or hidden model reasoning.
--   Keep user control obvious: no state-changing action is applied
-    without approval.
+- Keep the existing Radix/shadcn + Tailwind design system.
+- Do not spend hackathon time redesigning working pages.
+- Focus visual effort on:
+  - unified agent command bar
+  - Agent Activity
+  - structured plan cards
+  - approval/rejection states
+  - completed/skipped session states
+- Use clear visual distinction for:
+  - pending
+  - approved
+  - rejected
+  - completed
+  - skipped
+- Never display raw tool JSON or hidden model reasoning.
+- Keep user control obvious: no state-changing action is applied
+  without approval.
 
-------------------------------------------------------------------------
+---
 
 ## 9. Demo script --- 3 to 4 minutes
 
@@ -380,21 +377,21 @@ submission are already complete.
     Mention Next.js, TypeScript, MongoDB/Mongoose, NextAuth, OpenAI
     tool/function calling, and the roadmap.
 
-------------------------------------------------------------------------
+---
 
 ## 10. Success criteria
 
 The submission is demo-ready when all of the following work reliably:
 
--   Student can enter a natural-language academic goal.
--   Agent reads real seeded app data through tools.
--   Agent creates a structured multi-step plan.
--   Agent shows an observable activity/execution summary.
--   Plan is persisted as pending approval.
--   Student can approve or reject it.
--   Approved plan changes visible app state.
--   At least one completed/skipped outcome can be recorded.
--   A skipped session can trigger a proposed adaptation, if implemented.
--   Refreshing the page does not lose the plan.
--   No canteen, parking, food-ordering, or campus-map routes remain
-    reachable.
+- Student can enter a natural-language academic goal.
+- Agent reads real seeded app data through tools.
+- Agent creates a structured multi-step plan.
+- Agent shows an observable activity/execution summary.
+- Plan is persisted as pending approval.
+- Student can approve or reject it.
+- Approved plan changes visible app state.
+- At least one completed/skipped outcome can be recorded.
+- A skipped session can trigger a proposed adaptation, if implemented.
+- Refreshing the page does not lose the plan.
+- No canteen, parking, food-ordering, or campus-map routes remain
+  reachable.

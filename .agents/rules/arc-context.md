@@ -21,6 +21,7 @@ For tasks involving multiple areas, read only the required combination.
 Do not repeatedly reread a document within the same task unless necessary.
 
 Before implementing changes:
+
 1. Identify which project document is relevant.
 2. Read only that document.
 3. Follow it as the source of truth.

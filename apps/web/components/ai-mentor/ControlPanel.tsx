@@ -1,8 +1,13 @@
-import React from 'react';
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Loader, Mic, MicOff, Phone, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ControlPanelProps {
   isCallActive: boolean;
@@ -10,10 +15,10 @@ interface ControlPanelProps {
   onToggleCall: () => void;
 }
 
-const ControlPanel: React.FC<ControlPanelProps> = ({ 
-  isCallActive, 
-  isLoading, 
-  onToggleCall 
+const ControlPanel: React.FC<ControlPanelProps> = ({
+  isCallActive,
+  isLoading,
+  onToggleCall,
 }) => {
   return (
     <div className="flex flex-col items-center space-y-6">
@@ -28,8 +33,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 size="lg"
                 className={cn(
                   "rounded-full h-16 w-16 transition-all duration-300",
-                  isCallActive ? "hover:bg-destructive/90" : "hover:bg-primary/90",
-                  "shadow-lg hover:shadow-xl active:scale-95"
+                  isCallActive
+                    ? "hover:bg-destructive/90"
+                    : "hover:bg-primary/90",
+                  "shadow-lg hover:shadow-xl active:scale-95",
                 )}
               >
                 {isLoading ? (
@@ -42,7 +49,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{isLoading ? "Processing..." : isCallActive ? "End Arc AI call" : "Start Arc AI call"}</p>
+              <p>
+                {isLoading
+                  ? "Processing..."
+                  : isCallActive
+                    ? "End ARC AI call"
+                    : "Start ARC AI call"}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -58,7 +71,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   "rounded-full h-16 w-16 transition-all duration-300",
                   "shadow-md hover:shadow-lg",
                   "border-2",
-                  isCallActive ? "border-primary" : "border-muted"
+                  isCallActive ? "border-primary" : "border-muted",
                 )}
               >
                 {isCallActive ? (
@@ -69,19 +82,21 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Microphone {isCallActive ? "active" : "inactive"} (Arc AI)</p>
+              <p>Microphone {isCallActive ? "active" : "inactive"} (ARC AI)</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
       <p className="text-sm text-muted-foreground text-center">
-        {isLoading ? "Processing your request..." :
-         isCallActive ? "Call in progress - Speak clearly into your microphone" :
-         "Click the phone button to start a conversation"}
+        {isLoading
+          ? "Processing your request..."
+          : isCallActive
+            ? "Call in progress - Speak clearly into your microphone"
+            : "Click the phone button to start a conversation"}
       </p>
     </div>
   );
 };
 
-export default ControlPanel; 
+export default ControlPanel;

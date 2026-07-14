@@ -1,50 +1,58 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("rahul.sharma@student.edu")
-  const [password, setPassword] = useState("Password@123")
-  const [role, setRole] = useState<'student' | 'teacher' | 'canteen'>('student')
-  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("rahul.sharma@student.edu");
+  const [password, setPassword] = useState("Password@123");
+  const [role, setRole] = useState<"student" | "teacher" | "canteen">(
+    "student",
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role })
-      })
-      const data = await res.json()
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+      const data = await res.json();
       if (!res.ok) {
-        alert(data.error || 'Login failed')
-        setIsLoading(false)
-        return
+        alert(data.error || "Login failed");
+        setIsLoading(false);
+        return;
       }
-      localStorage.setItem('isLoggedIn', 'true')
-      localStorage.setItem('userRole', role)
-      localStorage.setItem('currentUser', JSON.stringify(data))
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userRole", role);
+      localStorage.setItem("currentUser", JSON.stringify(data));
       const dashboardUrls = {
-        student: '/student/dashboard',
-        teacher: '/teacher/dashboard',
-        canteen: '/canteen/dashboard'
-      }
-      window.location.href = dashboardUrls[role]
+        student: "/student/dashboard",
+        teacher: "/teacher/dashboard",
+        canteen: "/canteen/dashboard",
+      };
+      window.location.href = dashboardUrls[role];
     } catch (err) {
-      alert('Network error')
-      setIsLoading(false)
+      alert("Network error");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
@@ -52,8 +60,18 @@ export default function LoginPage() {
         href="/"
         className="absolute top-6 left-6 z-20 text-zinc-400 hover:text-[#e78a53] transition-colors duration-200 flex items-center space-x-2"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         <span>Back to Home</span>
       </Link>
@@ -74,7 +92,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
-            <span className="text-[#e78a53] font-bold tracking-tight text-2xl">Arc Campus</span>
+            <span className="text-[#e78a53] font-bold tracking-tight text-2xl">
+              ARC Campus
+            </span>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>
           <p className="text-zinc-400">Sign in to your account to continue</p>
@@ -119,8 +139,13 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role" className="text-white">Role</Label>
-              <Select value={role} onValueChange={(value) => setRole(value as any)}>
+              <Label htmlFor="role" className="text-white">
+                Role
+              </Label>
+              <Select
+                value={role}
+                onValueChange={(value) => setRole(value as any)}
+              >
                 <SelectTrigger className="bg-zinc-800/50 border-zinc-700 text-white focus:border-[#e78a53] focus:ring-[#e78a53]/20">
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
@@ -140,7 +165,10 @@ export default function LoginPage() {
                 />
                 <span className="text-zinc-300">Remember me</span>
               </label>
-              <Link href="#" className="text-sm text-[#e78a53] hover:text-[#e78a53]/80">
+              <Link
+                href="#"
+                className="text-sm text-[#e78a53] hover:text-[#e78a53]/80"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -157,7 +185,10 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-zinc-400">
               Don't have an account?{" "}
-              <Link href="/signup" className="text-[#e78a53] hover:text-[#e78a53]/80 font-medium">
+              <Link
+                href="/signup"
+                className="text-[#e78a53] hover:text-[#e78a53]/80 font-medium"
+              >
                 Sign up
               </Link>
             </p>
@@ -176,7 +207,9 @@ export default function LoginPage() {
               <div className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-black text-zinc-500">Or continue with</span>
+              <span className="px-2 bg-black text-zinc-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -225,5 +258,5 @@ export default function LoginPage() {
         </motion.div>
       </motion.div>
     </div>
-  )
+  );
 }

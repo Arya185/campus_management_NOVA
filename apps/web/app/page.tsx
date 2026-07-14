@@ -1,48 +1,49 @@
-"use client"
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import Hero from "@/components/home/hero"
-import Features from "@/components/features"
-import { TestimonialsSection } from "@/components/testimonials"
-import { NewReleasePromo } from "@/components/new-release-promo"
-import { FAQSection } from "@/components/faq-section"
-import { StickyFooter } from "@/components/sticky-footer"
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Hero from "@/components/home/hero";
+import Features from "@/components/features";
+import { TestimonialsSection } from "@/components/testimonials";
+import { NewReleasePromo } from "@/components/new-release-promo";
+import { FAQSection } from "@/components/faq-section";
+import { StickyFooter } from "@/components/sticky-footer";
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove("light", "system")
-    root.classList.add("dark")
-  }, [])
+    const root = window.document.documentElement;
+    root.classList.remove("light", "system");
+    root.classList.add("dark");
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
-    }
+      setIsScrolled(window.scrollY > 100);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleMobileNavClick = (elementId: string) => {
-    setIsMobileMenuOpen(false)
+    setIsMobileMenuOpen(false);
     setTimeout(() => {
-      const element = document.getElementById(elementId)
+      const element = document.getElementById(elementId);
       if (element) {
-        const headerOffset = 120 // Account for sticky header height + margin
-        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-        const offsetPosition = elementPosition - headerOffset
+        const headerOffset = 120; // Account for sticky header height + margin
+        const elementPosition =
+          element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - headerOffset;
 
         window.scrollTo({
           top: offsetPosition,
           behavior: "smooth",
-        })
+        });
       }
-    }, 100)
-  }
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen w-full relative bg-black">
@@ -50,7 +51,8 @@ export default function Home() {
       <div
         className="absolute inset-0 z-0"
         style={{
-          background: "radial-gradient(ellipse 50% 35% at 50% 0%, rgba(226, 232, 240, 0.12), transparent 60%), #000000",
+          background:
+            "radial-gradient(ellipse 50% 35% at 50% 0%, rgba(226, 232, 240, 0.12), transparent 60%), #000000",
         }}
       />
 
@@ -72,24 +74,27 @@ export default function Home() {
           }`}
           href="/"
         >
-          <span className="text-foreground font-bold tracking-tight text-lg">Arc Campus</span>
+          <span className="text-foreground font-bold tracking-tight text-lg">
+            ARC Campus
+          </span>
         </a>
 
         <div className="absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-muted-foreground transition duration-200 hover:text-foreground md:flex md:space-x-2">
           <a
             className="relative px-4 py-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             onClick={(e) => {
-              e.preventDefault()
-              const element = document.getElementById("features")
+              e.preventDefault();
+              const element = document.getElementById("features");
               if (element) {
-                const headerOffset = 120 // Account for sticky header height + margin
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-                const offsetPosition = elementPosition - headerOffset
+                const headerOffset = 120; // Account for sticky header height + margin
+                const elementPosition =
+                  element.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
 
                 window.scrollTo({
                   top: offsetPosition,
                   behavior: "smooth",
-                })
+                });
               }
             }}
           >
@@ -98,17 +103,18 @@ export default function Home() {
           <a
             className="relative px-4 py-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             onClick={(e) => {
-              e.preventDefault()
-              const element = document.getElementById("testimonials")
+              e.preventDefault();
+              const element = document.getElementById("testimonials");
               if (element) {
-                const headerOffset = 120 // Account for sticky header height + margin
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-                const offsetPosition = elementPosition - headerOffset
+                const headerOffset = 120; // Account for sticky header height + margin
+                const elementPosition =
+                  element.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
 
                 window.scrollTo({
                   top: offsetPosition,
                   behavior: "smooth",
-                })
+                });
               }
             }}
           >
@@ -117,17 +123,18 @@ export default function Home() {
           <a
             className="relative px-4 py-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             onClick={(e) => {
-              e.preventDefault()
-              const element = document.getElementById("faq")
+              e.preventDefault();
+              const element = document.getElementById("faq");
               if (element) {
-                const headerOffset = 120 // Account for sticky header height + margin
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-                const offsetPosition = elementPosition - headerOffset
+                const headerOffset = 120; // Account for sticky header height + margin
+                const elementPosition =
+                  element.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
 
                 window.scrollTo({
                   top: offsetPosition,
                   behavior: "smooth",
-                })
+                });
               }
             }}
           >
@@ -154,11 +161,10 @@ export default function Home() {
 
       {/* Mobile Header */}
       <header className="sticky top-4 z-[9999] mx-4 flex w-auto flex-row items-center justify-between rounded-full bg-background/80 backdrop-blur-sm border border-border/50 shadow-lg md:hidden px-4 py-3">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="/"
-        >
-          <span className="text-foreground font-bold tracking-tight text-base">Arc Campus</span>
+        <a className="flex items-center justify-center gap-2" href="/">
+          <span className="text-foreground font-bold tracking-tight text-base">
+            ARC Campus
+          </span>
         </a>
 
         <button
@@ -230,7 +236,6 @@ export default function Home() {
         <Features />
       </div>
 
-
       {/* Testimonials Section */}
       <div id="testimonials">
         <TestimonialsSection />
@@ -246,5 +251,5 @@ export default function Home() {
       {/* Sticky Footer */}
       <StickyFooter />
     </div>
-  )
+  );
 }

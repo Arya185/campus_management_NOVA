@@ -17,12 +17,12 @@ The Academic Success Agent demonstrates a complete, grounded, agentic loop:
 1. **Understand Goal**: The student provides a natural language goal (e.g., "Plan my exam week").
 2. **Read Real App State**: The agent uses deterministic **Read Tools** to pull the student's live timetable, attendance risk, and upcoming assignment deadlines from the database. It does NOT hallucinate classes or deadlines.
 3. **Plan**: The agent reasons over the data (e.g., identifying at-risk subjects) to formulate a structured study plan with specific sessions.
-4. **Propose Action**: The agent calls a **Write Tool** (`proposeStudyPlan`) which persists the plan and creates an `AgentAction` record. 
+4. **Propose Action**: The agent calls a **Write Tool** (`proposeStudyPlan`) which persists the plan and creates an `AgentAction` record.
 5. **Ask Approval**: Crucially, the agent **does not automatically activate changes**. The plan is presented to the user in a `pending_approval` state.
 6. **Act**: The user reviews the plan and clicks "Approve". Only then does the backend apply the mutation, syncing the study sessions to the active schedule.
 7. **Observe & Adapt (Reflection Loop)**: The student marks sessions as "Completed" or "Skipped". If a session is skipped, the agent detects this, finds the next available timetable window, and proposes a rescheduled session—asking for approval again.
 
-*All agent activity is transparently logged in an "Agent Activity" trace, but raw JSON and hidden reasoning are kept out of the user's view.*
+_All agent activity is transparently logged in an "Agent Activity" trace, but raw JSON and hidden reasoning are kept out of the user's view._
 
 ---
 
@@ -40,11 +40,13 @@ The Academic Success Agent demonstrates a complete, grounded, agentic loop:
 ## 🏗️ Architecture & Tech Stack
 
 **Frontend:**
+
 - **Framework**: Next.js 15 (App Router)
 - **UI & Styling**: React 19, Tailwind CSS, Radix UI primitives, shadcn/ui
 - **Language**: TypeScript
 
 **Backend & Services:**
+
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: NextAuth.js v4 (Role-based: Student, Teacher, Admin)
 - **AI Integration**: OpenRouter / OpenAI API for tool-calling LLM orchestration
@@ -54,33 +56,40 @@ The Academic Success Agent demonstrates a complete, grounded, agentic loop:
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js**: v18 or higher
 - **pnpm**: v9 or higher
 
 ### Installation
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/ansh-10-p/CODEKNIGHT_ARC.git
    cd CODEKNIGHT_ARC
    ```
 
 2. **Install Dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set Up Environment Variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   *Note: Fill in the required placeholder variables in `.env.local`.*
+
+   _Note: Fill in the required placeholder variables in `.env.local`._
 
 4. **Seed the Database**
+
    ```bash
    npm run seed:demo
    ```
-   *This populates the required demo student, mock timetable, and assignments.*
+
+   _This populates the required demo student, mock timetable, and assignments._
 
 5. **Start the Development Server**
    ```bash

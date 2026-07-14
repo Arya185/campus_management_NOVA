@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
+import type React from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function SignupPage() {
   return (
@@ -18,8 +18,18 @@ export default function SignupPage() {
         href="/"
         className="absolute top-8 left-8 z-20 text-zinc-400 hover:text-[#e78a53] transition-colors duration-200 flex items-center space-x-2 group"
       >
-        <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         <span>Back to Home</span>
       </Link>
@@ -34,10 +44,11 @@ export default function SignupPage() {
           className="text-center mb-16"
         >
           <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
-            Join Arc Campus
+            Join ARC Campus
           </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-            Choose your role to get started with our comprehensive campus solution platform
+            Choose your role to get started with our comprehensive campus
+            solution platform
           </p>
         </motion.div>
 
@@ -61,11 +72,20 @@ export default function SignupPage() {
                     {/* Icon Container */}
                     <div className="relative">
                       <div className="p-12 bg-gradient-to-br from-[#e78a53]/20 to-[#e78a53]/10 rounded-full group-hover:from-[#e78a53]/30 group-hover:to-[#e78a53]/20 transition-all duration-500 group-hover:scale-110">
-                        <svg className="w-20 h-20 text-[#e78a53]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                        <svg
+                          className="w-20 h-20 text-[#e78a53]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"
+                          />
                         </svg>
                       </div>
-                      
                     </div>
 
                     {/* Content */}
@@ -74,17 +94,27 @@ export default function SignupPage() {
                         Student
                       </h3>
                       <p className="text-zinc-300 text-lg leading-relaxed max-w-sm mx-auto">
-                        Access timetables, events, food ordering, resource booking, campus navigation, attendance tracking, and internship opportunities
+                        Access timetables, events, food ordering, resource
+                        booking, campus navigation, attendance tracking, and
+                        internship opportunities
                       </p>
-
-                      
 
                       {/* CTA Button */}
                       <div className="mt-8">
                         <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#e78a53] to-[#e78a53]/80 text-white rounded-full text-lg font-semibold group-hover:from-[#e78a53]/90 group-hover:to-[#e78a53] transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#e78a53]/25">
                           Get Started
-                          <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg
+                            className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -106,11 +136,20 @@ export default function SignupPage() {
                     {/* Icon Container */}
                     <div className="relative">
                       <div className="p-12 bg-gradient-to-br from-[#e78a53]/20 to-[#e78a53]/10 rounded-full group-hover:from-[#e78a53]/30 group-hover:to-[#e78a53]/20 transition-all duration-500 group-hover:scale-110">
-                        <svg className="w-20 h-20 text-[#e78a53]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        <svg
+                          className="w-20 h-20 text-[#e78a53]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                          />
                         </svg>
                       </div>
-                      
                     </div>
 
                     {/* Content */}
@@ -119,17 +158,26 @@ export default function SignupPage() {
                         Teacher
                       </h3>
                       <p className="text-zinc-300 text-lg leading-relaxed max-w-sm mx-auto">
-                        Manage timetables, track student attendance, place food orders, and access all teaching resources
+                        Manage timetables, track student attendance, place food
+                        orders, and access all teaching resources
                       </p>
-
-                      
 
                       {/* CTA Button */}
                       <div className="mt-8">
                         <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#e78a53] to-[#e78a53]/80 text-white rounded-full text-lg font-semibold group-hover:from-[#e78a53]/90 group-hover:to-[#e78a53] transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#e78a53]/25">
                           Get Started
-                          <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg
+                            className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -150,12 +198,15 @@ export default function SignupPage() {
         >
           <p className="text-zinc-400 text-lg">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#e78a53] hover:text-[#e78a53]/80 font-semibold transition-colors duration-200">
+            <Link
+              href="/login"
+              className="text-[#e78a53] hover:text-[#e78a53]/80 font-semibold transition-colors duration-200"
+            >
               Sign in here
             </Link>
           </p>
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

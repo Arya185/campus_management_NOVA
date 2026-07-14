@@ -1,32 +1,32 @@
-"use client"
-import { motion, AnimatePresence } from "framer-motion"
-import { useState, useEffect } from "react"
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 export function StickyFooter() {
-  const [isAtBottom, setIsAtBottom] = useState(false)
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
   useEffect(() => {
-    let ticking = false
+    let ticking = false;
 
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const scrollTop = window.scrollY
-          const windowHeight = window.innerHeight
-          const documentHeight = document.documentElement.scrollHeight
-          const isNearBottom = scrollTop + windowHeight >= documentHeight - 100
+          const scrollTop = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const isNearBottom = scrollTop + windowHeight >= documentHeight - 100;
 
-          setIsAtBottom(isNearBottom)
-          ticking = false
-        })
-        ticking = true
+          setIsAtBottom(isNearBottom);
+          ticking = false;
+        });
+        ticking = true;
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() // Check initial state
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -53,7 +53,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Home
@@ -61,7 +63,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Docs
@@ -69,7 +73,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Components
@@ -79,7 +85,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Github
@@ -87,7 +95,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Twitter
@@ -95,7 +105,9 @@ export function StickyFooter() {
                 <li
                   className="hover:underline cursor-pointer transition-colors"
                   style={{ color: "#121113" }}
-                  onMouseEnter={(e) => (e.target.style.color = "rgba(18, 17, 19, 0.8)")}
+                  onMouseEnter={(e) =>
+                    (e.target.style.color = "rgba(18, 17, 19, 0.8)")
+                  }
                   onMouseLeave={(e) => (e.target.style.color = "#121113")}
                 >
                   Discord
@@ -109,11 +121,11 @@ export function StickyFooter() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              Arc Campus
+              ARC Campus
             </motion.h2>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
