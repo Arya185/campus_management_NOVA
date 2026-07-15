@@ -792,6 +792,148 @@ export const StudyPlanModel = model("StudyPlan", StudyPlanSchema);
 if (models.AgentAction) delete models.AgentAction;
 export const AgentActionModel = model("AgentAction", AgentActionSchema);
 
+// ── Career Roadmap Schema (Phase 2.3) ─────────────────────────────────────────────
+const CareerRoadmapSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    targetRole: { type: String, required: true },
+    milestones: [{
+      title: { type: String, required: true },
+      description: { type: String },
+      targetDate: { type: String },
+      status: { type: String, enum: ["planned", "in_progress", "done"], default: "planned" }
+    }],
+    rationale: { type: String },
+    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" }
+  },
+  { timestamps: true }
+);
+
+CareerRoadmapSchema.index({ studentId: 1, status: 1 });
+
+export const CareerRoadmapModel =
+  models.CareerRoadmap || model("CareerRoadmap", CareerRoadmapSchema);
+
+// ── Research Note Schema (Phase 2.5) ─────────────────────────────────────────────
+const ResearchNoteSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    topic: { type: String, required: true },
+    sources: [{ title: String, url: String, summary: String }],
+    content: { type: String, required: true },
+    tags: [{ type: String }],
+  },
+  { timestamps: true }
+);
+
+ResearchNoteSchema.index({ studentId: 1, topic: 1 });
+
+export const ResearchNoteModel =
+  models.ResearchNote || model("ResearchNote", ResearchNoteSchema);
+
+// ── Project Schema (Phase 2.6) ─────────────────────────────────────────────────────
+const ProjectSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    title: { type: String, required: true },
+    description: { type: String },
+    domain: { type: String, required: true },
+    status: { type: String, enum: ["planning", "in_progress", "completed", "on_hold"], default: "planning" },
+    technologies: [{ type: String }],
+    milestones: [{
+      title: { type: String, required: true },
+      description: { type: String },
+      targetDate: { type: String },
+      status: { type: String, enum: ["planned", "in_progress", "done"], default: "planned" }
+    }],
+    mentorFeedback: [{ type: String }],
+  },
+  { timestamps: true }
+);
+
+ProjectSchema.index({ studentId: 1, status: 1 });
+
+export const ProjectModel =
+  models.Project || model("Project", ProjectSchema);
+
+// ── Note Schema (Phase 2.7) ─────────────────────────────────────────────────────
+const NoteSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    summary: { type: String },
+    tags: [{ type: String }],
+    category: { type: String, enum: ["lecture", "assignment", "personal", "other"], default: "personal" },
+  },
+  { timestamps: true }
+);
+
+NoteSchema.index({ studentId: 1, category: 1 });
+
+export const NoteModel =
+  models.Note || model("Note", NoteSchema);
+
+// ── Flashcard Deck and Quiz Attempt Schemas (Phase 2.8) ───────────────────────────────
+const FlashcardDeckSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    title: { type: String, required: true },
+    subject: { type: String, required: true },
+    cards: [
+      {
+        front: { type: String, required: true },
+        back: { type: String, required: true }
+      }
+    ],
+  },
+  { timestamps: true }
+);
+
+const QuizAttemptSchema = new Schema(
+  {
+    studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
+    deckId: { type: Schema.Types.ObjectId, ref: "FlashcardDeck", required: true },
+    score: { type: Number, required: true },
+    totalQuestions: { type: Number, required: true },
+    correctAnswers: { type: Number, required: true },
+  },
+  { timestamps: true }
+);
+
+FlashcardDeckSchema.index({ studentId: 1, subject: 1 });
+QuizAttemptSchema.index({ studentId: 1, deckId: 1 });
+
+export const FlashcardDeckModel =
+  models.FlashcardDeck || model("FlashcardDeck", FlashcardDeckSchema);
+
+export const QuizAttemptModel =
+  models.QuizAttempt || model("QuizAttempt", QuizAttemptSchema);
+
+// ── Teacher Resource Schema ─────────────────────────────────────────────────────
+const TeacherResourceSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    subject: { type: String, required: true },
+    description: { type: String, required: true },
+    content: { type: String, required: true },
+    category: {
+      type: String,
+      enum: ["notes", "slides", "assignment", "reference"],
+      required: true
+    },
+    postedBy: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
+    fileSize: { type: String },
+    downloads: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
+
+TeacherResourceSchema.index({ subject: 1 });
+
+export const TeacherResourceModel =
+  models.TeacherResource || model("TeacherResource", TeacherResourceSchema);
+
 // ── Agent Audit Log (Phase 3.12) ─────────────────────────────────────────────
 // Unified audit log for governance + orchestrator visibility.
 const AgentAuditLogSchema = new Schema(

@@ -8,6 +8,10 @@ import {
   StudyPlanModel,
   AgentActionModel,
   AgentAuditLogModel,
+  CareerRoadmapModel,
+  ResearchNoteModel,
+  ProjectModel,
+  ExamResultModel,
 } from "./models";
 
 export async function getStudentTimetable(studentId: string) {
@@ -452,5 +456,157 @@ export async function proposeReschedule(
         status: "planned",
       },
     ],
+  };
+}
+
+// ── Career Roadmap Agent Tools ─────────────────────────────────────────────────────
+
+export async function getStudentProfile(studentId: string) {
+  await connectToDatabase();
+  const student = (await StudentModel.findById(studentId).lean()) as any;
+  if (!student) throw new Error(`Student not found with ID: ${studentId}`);
+  return {
+    name: student.name,
+    branch: student.branch,
+    year: student.year,
+    skills: student.skills || [],
+    interests: student.interests || []
+  };
+}
+
+export async function getAcademicHistory(studentId: string) {
+  await connectToDatabase();
+  const examResults = await ExamResultModel.find({ studentId }).lean();
+  return examResults.map((r: any) => ({
+    courseCode: r.courseCode,
+    courseName: r.courseName,
+    grade: r.grade,
+    gpa: r.gpa
+  }));
+}
+
+export async function getCareerMemory(studentId: string) {
+  await connectToDatabase();
+  const roadmaps = await CareerRoadmapModel.find({ studentId }).lean();
+  return roadmaps.map((r: any) => ({
+    id: r._id.toString(),
+    targetRole: r.targetRole,
+    status: r.status,
+    milestones: r.milestones
+  }));
+}
+
+export async function proposeCareerRoadmap(studentId: string, input: any) {
+  await connectToDatabase();
+  const roadmap = await CareerRoadmapModel.create({
+    studentId,
+    targetRole: input.targetRole,
+    milestones: input.milestones,
+    rationale: input.rationale,
+    status: "pending"
+  });
+  return {
+    success: true,
+    roadmapId: roadmap._id.toString()
+  };
+}
+
+export async function getCareerRoadmaps(studentId: string) {
+  await connectToDatabase();
+  const roadmaps = await CareerRoadmapModel.find({ studentId }).lean();
+  return roadmaps.map((r: any) => ({
+    id: r._id.toString(),
+    targetRole: r.targetRole,
+    status: r.status,
+    milestones: r.milestones
+  }));
+}
+
+// ── Research Assistant Tools ─────────────────────────────────────────────────────
+
+export async function getResearchSources(topic: string) {
+  // Mock research sources - in production, this would call a real research API
+  return {
+    sources: [
+      { title: `"${topic}" - Academic Overview`, url: "https://scholar.google.com", summary: "Academic research overview" },
+      { title: `"${topic}" - Recent Papers`, url: "https://arxiv.org", summary: "Recent research papers" }
+    ]
+  };
+}
+
+export async function saveResearchNote(studentId: string, input: any) {
+  await connectToDatabase();
+  const note = await ResearchNoteModel.create({
+    studentId,
+    topic: input.topic,
+    content: input.content,
+    sources: input.sources || [],
+    tags: input.tags || []
+  });
+  return {
+    success: true,
+    noteId: note._id.toString()
+  };
+}
+
+export async function getResearchNotes(studentId: string, topic?: string) {
+  await connectToDatabase();
+  const query: any = { studentId };
+  if (topic) query.topic = topic;
+  const notes = await ResearchNoteModel.find(query).lean();
+  return notes.map((n: any) => ({
+    id: n._id.toString(),
+    topic: n.topic,
+    content: n.content,
+    sources: n.sources,
+    tags: n.tags
+  }));
+}
+
+// ── Project Mentor Agent Tools ─────────────────────────────────────────────────────
+
+export async function getProjects(studentId: string) {
+  await connectToDatabase();
+  const projects = await ProjectModel.find({ studentId }).lean();
+  return projects.map((p: any) => ({
+    id: p._id.toString(),
+    title: p.title,
+    description: p.description,
+    domain: p.domain,
+    status: p.status,
+    technologies: p.technologies,
+    milestones: p.milestones
+  }));
+}
+
+export async function createProject(studentId: string, input: any) {
+  await connectToDatabase();
+  const project = await ProjectModel.create({
+    studentId,
+    title: input.title,
+    description: input.description,
+    domain: input.domain,
+    technologies: input.technologies || [],
+    milestones: input.milestones || [],
+    status: "planning"
+  });
+  return {
+    success: true,
+    projectId: project._id.toString()
+  };
+}
+
+export async function updateProjectMilestone(studentId: string, projectId: string, milestoneIndex: number, status: "in_progress" | "done") {
+  await connectToDatabase();
+  const project = await ProjectModel.findOne({ _id: projectId, studentId });
+  if (!project) throw new Error("Project not found");
+  if (milestoneIndex < 0 || milestoneIndex >= project.milestones.length) {
+    throw new Error("Invalid milestone index");
+  }
+  project.milestones[milestoneIndex].status = status;
+  await project.save();
+  return {
+    success: true,
+    message: "Milestone updated successfully."
   };
 }
