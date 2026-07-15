@@ -92,6 +92,8 @@ Your role is to help students research topics, find sources, and organize their 
 
   const activityLog: string[] = [];
   let savedNoteId: string | null = null;
+  let sources: Array<{ title: string; url: string; summary: string }> = [];
+  let notes: any[] | null = null;
 
   for (let i = 0; i < 5; i++) {
     const response = await openai.chat.completions.create({
@@ -117,6 +119,7 @@ Your role is to help students research topics, find sources, and organize their 
           if (name === "getResearchSources") {
             activityLog.push(`Fetched research sources for ${args.topic}`);
             result = await getResearchSources(args.topic);
+            sources = result.sources || [];
           } else if (name === "saveResearchNote") {
             activityLog.push(`Saved research note for ${args.topic}`);
             const saved = await saveResearchNote(studentId, args);
@@ -125,6 +128,7 @@ Your role is to help students research topics, find sources, and organize their 
           } else if (name === "getResearchNotes") {
             activityLog.push("Checked existing research notes");
             result = await getResearchNotes(studentId, args.topic);
+            notes = result;
           } else {
             result = { error: "Unknown tool" };
           }
@@ -143,7 +147,9 @@ Your role is to help students research topics, find sources, and organize their 
       return {
         reply: msg.content,
         activityLog,
-        noteId: savedNoteId
+        noteId: savedNoteId,
+        sources,
+        notes,
       };
     }
   }
@@ -151,6 +157,8 @@ Your role is to help students research topics, find sources, and organize their 
   return {
     reply: "I reached my maximum number of steps while trying to process this request.",
     activityLog,
-    noteId: savedNoteId
+    noteId: savedNoteId,
+    sources,
+    notes,
   };
 }

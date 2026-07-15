@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
-  MapPin,
   BookOpen,
   Users,
   Briefcase,
@@ -30,19 +29,32 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
 
   const isActive = (path: string) => pathname === path;
 
-  const navItems = [
-    { href: "/student/dashboard", icon: Users, label: "Dashboard" },
-    { href: "/student/schedule", icon: Calendar, label: "Timetable" },
-    { href: "/student/classroom", icon: BookOpen, label: "Classroom" },
-    { href: "/student/materials", icon: ClipboardList, label: "Tests & Exams" },
-    { href: "/student/events", icon: Users, label: "Events" },
-    { href: "/student/resources", icon: BookOpen, label: "Resources" },
-    { href: "/student/agent", icon: Bot, label: "Academic Agent" },
-    { href: "/student/attendance", icon: UserCheck, label: "Attendance" },
-    { href: "/student/internships", icon: Briefcase, label: "Internships" },
-    { href: "/student/fees", icon: IndianRupee, label: "Pay Fees" },
-    { href: "/student/examination", icon: Award, label: "Exam Cell" },
-    { href: "/student/announcements", icon: Megaphone, label: "Announcements" },
+  const navSections = [
+    {
+      title: "Campus",
+      items: [
+        { href: "/student/dashboard", icon: Users, label: "Dashboard" },
+        { href: "/student/schedule", icon: Calendar, label: "Timetable" },
+        { href: "/student/classroom", icon: BookOpen, label: "Classroom" },
+        { href: "/student/materials", icon: ClipboardList, label: "Tests & Exams" },
+        { href: "/student/events", icon: Users, label: "Events" },
+        { href: "/student/resources", icon: BookOpen, label: "Resources" },
+        { href: "/student/attendance", icon: UserCheck, label: "Attendance" },
+        { href: "/student/internships", icon: Briefcase, label: "Internships" },
+        { href: "/student/fees", icon: IndianRupee, label: "Pay Fees" },
+        { href: "/student/examination", icon: Award, label: "Exam Cell" },
+        { href: "/student/announcements", icon: Megaphone, label: "Announcements" },
+      ],
+    },
+    {
+      title: "AI Agents",
+      items: [
+        { href: "/student/agent", icon: Bot, label: "Academic Agent" },
+        { href: "/student/career", icon: Briefcase, label: "Career Roadmap" },
+        { href: "/student/research", icon: FileText, label: "Research Assistant" },
+        { href: "/student/project-mentor", icon: CheckCircle, label: "Project Mentor" },
+      ],
+    },
   ];
 
   return (
@@ -59,26 +71,33 @@ export function StudentSidebar({ className = "" }: SidebarProps) {
         <p className="text-zinc-400 text-sm mt-1">Student Portal</p>
       </div>
 
-      <nav className="px-4 space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.href);
+      <nav className="px-4 space-y-5">
+        {navSections.map((section) => (
+          <div key={section.title} className="space-y-2">
+            <div className="px-4 text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-500">
+              {section.title}
+            </div>
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
 
-          return (
-            <Link key={item.href} href={item.href}>
-              <div
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  active
-                    ? "text-white bg-[#e78a53]/10 border-l-2 border-[#e78a53]"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
-                }`}
-              >
-                <Icon className={`h-5 w-5 ${active ? "text-[#e78a53]" : ""}`} />
-                <span>{item.label}</span>
-              </div>
-            </Link>
-          );
-        })}
+              return (
+                <Link key={item.href} href={item.href}>
+                  <div
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      active
+                        ? "text-white bg-[#e78a53]/10 border-l-2 border-[#e78a53]"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    <Icon className={`h-5 w-5 ${active ? "text-[#e78a53]" : ""}`} />
+                    <span>{item.label}</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="p-4 border-t border-zinc-800">

@@ -95,7 +95,8 @@ Your role is to help students plan their career paths with actionable milestones
   ];
 
   const activityLog: string[] = [];
-  let proposedRoadmapId: string | null = null;
+  let proposedRoadmap: any = null;
+  let roadmaps: any[] | null = null;
 
   for (let i = 0; i < 5; i++) {
     const response = await openai.chat.completions.create({
@@ -130,11 +131,12 @@ Your role is to help students plan their career paths with actionable milestones
           } else if (name === "proposeCareerRoadmap") {
             activityLog.push(`Proposed career roadmap for ${args.targetRole}`);
             const proposed = await proposeCareerRoadmap(studentId, args);
-            proposedRoadmapId = proposed.roadmapId;
+            proposedRoadmap = proposed.roadmap;
             result = { success: true, message: "Career roadmap proposed successfully." };
           } else if (name === "getCareerRoadmaps") {
             activityLog.push("Checked existing career roadmaps");
             result = await getCareerRoadmaps(studentId);
+            roadmaps = result;
           } else {
             result = { error: "Unknown tool" };
           }
@@ -153,7 +155,8 @@ Your role is to help students plan their career paths with actionable milestones
       return {
         reply: msg.content,
         activityLog,
-        roadmapId: proposedRoadmapId
+        roadmap: proposedRoadmap,
+        roadmaps,
       };
     }
   }
@@ -161,6 +164,7 @@ Your role is to help students plan their career paths with actionable milestones
   return {
     reply: "I reached my maximum number of steps while trying to process this request.",
     activityLog,
-    roadmapId: proposedRoadmapId
+    roadmap: proposedRoadmap,
+    roadmaps,
   };
 }

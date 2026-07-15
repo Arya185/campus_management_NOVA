@@ -838,7 +838,7 @@ const ProjectSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String },
     domain: { type: String, required: true },
-    status: { type: String, enum: ["planning", "in_progress", "completed", "on_hold"], default: "planning" },
+    status: { type: String, enum: ["pending", "approved", "rejected", "planning", "in_progress", "completed", "on_hold"], default: "pending" },
     technologies: [{ type: String }],
     milestones: [{
       title: { type: String, required: true },

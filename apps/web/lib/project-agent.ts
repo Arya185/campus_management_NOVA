@@ -90,7 +90,8 @@ Your role is to help students plan, track, and complete their projects.
   ];
 
   const activityLog: string[] = [];
-  let createdProjectId: string | null = null;
+  let project: any = null;
+  let projects: any[] | null = null;
 
   for (let i = 0; i < 5; i++) {
     const response = await openai.chat.completions.create({
@@ -116,10 +117,11 @@ Your role is to help students plan, track, and complete their projects.
           if (name === "getProjects") {
             activityLog.push("Checked existing projects");
             result = await getProjects(studentId);
+            projects = result;
           } else if (name === "createProject") {
             activityLog.push(`Created project: ${args.title}`);
             const created = await createProject(studentId, args);
-            createdProjectId = created.projectId;
+            project = created.project;
             result = { success: true, message: "Project created successfully." };
           } else if (name === "updateProjectMilestone") {
             activityLog.push(`Updated milestone for project ${args.projectId}`);
@@ -142,7 +144,8 @@ Your role is to help students plan, track, and complete their projects.
       return {
         reply: msg.content,
         activityLog,
-        projectId: createdProjectId
+        project,
+        projects,
       };
     }
   }
@@ -150,6 +153,7 @@ Your role is to help students plan, track, and complete their projects.
   return {
     reply: "I reached my maximum number of steps while trying to process this request.",
     activityLog,
-    projectId: createdProjectId
+    project,
+    projects,
   };
 }

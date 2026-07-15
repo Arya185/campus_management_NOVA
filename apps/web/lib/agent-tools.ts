@@ -507,7 +507,13 @@ export async function proposeCareerRoadmap(studentId: string, input: any) {
   });
   return {
     success: true,
-    roadmapId: roadmap._id.toString()
+    roadmap: {
+      id: roadmap._id.toString(),
+      targetRole: roadmap.targetRole,
+      milestones: roadmap.milestones,
+      rationale: roadmap.rationale,
+      status: roadmap.status,
+    },
   };
 }
 
@@ -588,11 +594,20 @@ export async function createProject(studentId: string, input: any) {
     domain: input.domain,
     technologies: input.technologies || [],
     milestones: input.milestones || [],
-    status: "planning"
+    status: "pending"
   });
   return {
     success: true,
-    projectId: project._id.toString()
+    project: {
+      id: project._id.toString(),
+      title: project.title,
+      description: project.description,
+      domain: project.domain,
+      status: project.status,
+      technologies: project.technologies,
+      milestones: project.milestones,
+      mentorFeedback: project.mentorFeedback || [],
+    },
   };
 }
 
