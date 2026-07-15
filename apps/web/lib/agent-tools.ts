@@ -1,9 +1,18 @@
 import mongoose from "mongoose";
 import { connectToDatabase } from "./db";
-import { StudentModel, TimetableModel, AttendanceModel, AssignmentModel, StudyPlanModel, AgentActionModel } from "./models";
+import {
+  StudentModel,
+  TimetableModel,
+  AttendanceModel,
+  AssignmentModel,
+  StudyPlanModel,
+  AgentActionModel,
+  AgentAuditLogModel,
+} from "./models";
+
 export async function getStudentTimetable(studentId: string) {
   await connectToDatabase();
-  
+
   const student = (await StudentModel.findById(studentId).lean()) as any;
   if (!student) {
     throw new Error(`Student not found with ID: ${studentId}`);
@@ -14,16 +23,18 @@ export async function getStudentTimetable(studentId: string) {
   if (student.branch === "Computer Science") branchCode = "CS";
   const expectedClassName = `${student.year} ${branchCode}-${student.section}`;
 
-  const timetables = await TimetableModel.find({ 
-    className: expectedClassName 
-  }).sort({ weekStartDate: -1, timeSlot: 1 }).lean();
+  const timetables = await TimetableModel.find({
+    className: expectedClassName,
+  })
+    .sort({ weekStartDate: -1, timeSlot: 1 })
+    .lean();
 
-  return timetables.map(t => ({
+  return timetables.map((t) => ({
     day: t.day,
     timeSlot: t.timeSlot,
     subject: t.subjectName,
     type: t.type,
-    room: t.room || "TBA"
+    room: t.room || "TBA",
   }));
 }
 
@@ -31,9 +42,9 @@ export async function getAttendanceSummary(studentId: string) {
   await connectToDatabase();
 
   const records = await AttendanceModel.find({ studentId }).lean();
-  
-  const summaryMap: Record<string, { present: number, total: number }> = {};
-  
+
+  const summaryMap: Record<string, { present: number; total: number }> = {};
+
   for (const record of records) {
     const subject = record.subjectName || "Unknown Subject";
     if (!summaryMap[subject]) {
@@ -47,8 +58,9 @@ export async function getAttendanceSummary(studentId: string) {
 
   const result = [];
   for (const [subject, counts] of Object.entries(summaryMap)) {
-    const percentage = counts.total > 0 ? (counts.present / counts.total) * 100 : 0;
-    
+    const percentage =
+      counts.total > 0 ? (counts.present / counts.total) * 100 : 0;
+
     let riskClassification = "Healthy";
     if (percentage < 75) {
       riskClassification = "At-Risk";
@@ -59,7 +71,7 @@ export async function getAttendanceSummary(studentId: string) {
       attendedCount: counts.present,
       totalCount: counts.total,
       attendancePercentage: Math.round(percentage),
-      status: riskClassification
+      status: riskClassification,
     });
   }
 
@@ -70,19 +82,21 @@ export async function getUpcomingAssignments(studentId: string) {
   await connectToDatabase();
 
   const now = new Date();
-  
+
   // Find pending assignments that are due in the future
-  const assignments = await AssignmentModel.find({ 
+  const assignments = await AssignmentModel.find({
     studentId,
     status: "pending",
-    dueDate: { $gte: now } 
-  }).sort({ dueDate: 1 }).lean();
+    dueDate: { $gte: now },
+  })
+    .sort({ dueDate: 1 })
+    .lean();
 
-  return assignments.map(a => {
+  return assignments.map((a) => {
     // Calculate days remaining
     const diffTime = Math.abs(a.dueDate.getTime() - now.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     let urgency = "Normal";
     if (diffDays <= 2) urgency = "High";
     else if (diffDays <= 7) urgency = "Medium";
@@ -94,7 +108,7 @@ export async function getUpcomingAssignments(studentId: string) {
       dueDate: a.dueDate.toISOString().split("T")[0],
       status: a.status,
       daysRemaining: diffDays,
-      urgency
+      urgency,
     };
   });
 }
@@ -102,7 +116,7 @@ export async function getUpcomingAssignments(studentId: string) {
 export async function getStudyPlans(studentId: string) {
   await connectToDatabase();
   const plans = await StudyPlanModel.find({ studentId }).lean();
-  return plans.map(p => ({
+  return plans.map((p) => ({
     id: p._id.toString(),
     goal: p.goal,
     status: p.status,
@@ -112,11 +126,10 @@ export async function getStudyPlans(studentId: string) {
       date: s.date,
       startTime: s.startTime,
       endTime: s.endTime,
-      status: s.status
-    }))
+      status: s.status,
+    })),
   }));
 }
-
 
 export interface StudySessionInput {
   title: string;
@@ -138,17 +151,28 @@ function validateTime(timeStr: string) {
   return /^([01]\d|2[0-3]):([0-5]\d)$/.test(timeStr);
 }
 
-export async function proposeStudyPlan(studentId: string, input: StudyPlanInput) {
+export async function proposeStudyPlan(
+  studentId: string,
+  input: StudyPlanInput,
+) {
   await connectToDatabase();
 
   const student = (await StudentModel.findById(studentId).lean()) as any;
   if (!student) throw new Error(`Student not found with ID: ${studentId}`);
   if (!input.goal) throw new Error("Study plan requires a goal");
-  if (!input.sessions || input.sessions.length === 0) throw new Error("Study plan requires at least one session");
+  if (!input.sessions || input.sessions.length === 0)
+    throw new Error("Study plan requires at least one session");
 
   for (const session of input.sessions) {
-    if (!session.title || !session.date || !session.startTime || !session.endTime) {
-      throw new Error("Each session must have a title, date, startTime, and endTime");
+    if (
+      !session.title ||
+      !session.date ||
+      !session.startTime ||
+      !session.endTime
+    ) {
+      throw new Error(
+        "Each session must have a title, date, startTime, and endTime",
+      );
     }
     if (!validateTime(session.startTime) || !validateTime(session.endTime)) {
       throw new Error("Invalid time format. Use HH:mm");
@@ -156,7 +180,9 @@ export async function proposeStudyPlan(studentId: string, input: StudyPlanInput)
     const [startH, startM] = session.startTime.split(":").map(Number);
     const [endH, endM] = session.endTime.split(":").map(Number);
     if (startH * 60 + startM >= endH * 60 + endM) {
-      throw new Error(`Start time (${session.startTime}) must be before end time (${session.endTime})`);
+      throw new Error(
+        `Start time (${session.startTime}) must be before end time (${session.endTime})`,
+      );
     }
   }
 
@@ -165,10 +191,10 @@ export async function proposeStudyPlan(studentId: string, input: StudyPlanInput)
     studentId,
     goal: input.goal,
     status: "pending",
-    sessions: input.sessions.map(s => ({
+    sessions: input.sessions.map((s) => ({
       ...s,
-      status: "planned"
-    }))
+      status: "planned",
+    })),
   });
 
   // Create the corresponding AgentAction for audit and approval
@@ -177,9 +203,23 @@ export async function proposeStudyPlan(studentId: string, input: StudyPlanInput)
     actionType: "create_plan",
     summary: `Proposed study plan: ${input.goal}`,
     activityLog: input.activityLog || [],
-    rationale: input.rationale || "Generated based on student academic profile.",
+    rationale:
+      input.rationale || "Generated based on student academic profile.",
     status: "pending",
-    planId: studyPlan._id
+    planId: studyPlan._id,
+  });
+
+  // Unified audit log entry (pending)
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Proposed study plan: ${input.goal}`,
+    status: "pending",
+    payload: {
+      actionId: agentAction._id.toString(),
+      planId: studyPlan._id.toString(),
+    },
   });
 
   return {
@@ -193,21 +233,41 @@ export async function proposeStudyPlan(studentId: string, input: StudyPlanInput)
       date: s.date,
       startTime: s.startTime,
       endTime: s.endTime,
-      status: s.status
-    }))
+      status: s.status,
+    })),
   };
 }
 
-export async function resolveAgentAction(studentId: string, actionId: string, status: "approved" | "rejected") {
+export async function resolveAgentAction(
+  studentId: string,
+  actionId: string,
+  status: "approved" | "rejected",
+) {
   await connectToDatabase();
-  
+
   const action = await AgentActionModel.findById(actionId);
   if (!action) throw new Error("AgentAction not found");
-  if (action.studentId.toString() !== studentId) throw new Error("Unauthorized to modify this action");
-  if (action.status !== "pending") throw new Error(`Action is already ${action.status}`);
+  if (action.studentId.toString() !== studentId)
+    throw new Error("Unauthorized to modify this action");
+  if (action.status !== "pending")
+    throw new Error(`Action is already ${action.status}`);
 
   action.status = status;
   await action.save();
+
+  // Unified audit log entry (approval decision)
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Academic agent action ${action.actionType} ${status}`,
+    status: status === "approved" ? "approved" : "rejected",
+    payload: {
+      actionId: action._id.toString(),
+      planId: action.planId ? action.planId.toString() : null,
+      actionType: action.actionType,
+    },
+  });
 
   // If the action is tied to a StudyPlan
   if (action.planId) {
@@ -219,7 +279,10 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
       } else if (action.actionType === "reschedule_session") {
         if (status === "approved" && action.payload) {
           try {
-            const newSession = typeof action.payload === 'string' ? JSON.parse(action.payload) : action.payload;
+            const newSession =
+              typeof action.payload === "string"
+                ? JSON.parse(action.payload)
+                : action.payload;
             plan.sessions.push({
               title: newSession.title,
               date: newSession.date,
@@ -227,7 +290,7 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
               endTime: newSession.endTime,
               subject: newSession.subject,
               topics: newSession.topics,
-              status: "planned"
+              status: "planned",
             });
             await plan.save();
           } catch (e) {
@@ -241,7 +304,11 @@ export async function resolveAgentAction(studentId: string, actionId: string, st
   return { success: true, status };
 }
 
-export async function completeStudySession(studentId: string, planId: string, sessionId: string) {
+export async function completeStudySession(
+  studentId: string,
+  planId: string,
+  sessionId: string,
+) {
   await connectToDatabase();
   const plan = await StudyPlanModel.findById(planId);
   if (!plan) throw new Error("StudyPlan not found");
@@ -250,14 +317,33 @@ export async function completeStudySession(studentId: string, planId: string, se
 
   const session = plan.sessions.id(sessionId);
   if (!session) throw new Error("Session not found");
-  if (session.status !== "planned") throw new Error(`Session is already ${session.status}`);
+  if (session.status !== "planned")
+    throw new Error(`Session is already ${session.status}`);
 
   session.status = "completed";
   await plan.save();
+
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Study session completed: ${session.title}`,
+    status: "completed",
+    payload: {
+      planId: plan._id.toString(),
+      sessionId: sessionId,
+      title: session.title,
+    },
+  });
+
   return { success: true, message: "Session marked as completed." };
 }
 
-export async function skipStudySession(studentId: string, planId: string, sessionId: string) {
+export async function skipStudySession(
+  studentId: string,
+  planId: string,
+  sessionId: string,
+) {
   await connectToDatabase();
   const plan = await StudyPlanModel.findById(planId);
   if (!plan) throw new Error("StudyPlan not found");
@@ -266,14 +352,47 @@ export async function skipStudySession(studentId: string, planId: string, sessio
 
   const session = plan.sessions.id(sessionId);
   if (!session) throw new Error("Session not found");
-  if (session.status !== "planned") throw new Error(`Session is already ${session.status}`);
+  if (session.status !== "planned")
+    throw new Error(`Session is already ${session.status}`);
 
   session.status = "skipped";
   await plan.save();
+
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Study session skipped: ${session.title}`,
+    status: "completed",
+    payload: {
+      planId: plan._id.toString(),
+      sessionId: sessionId,
+      title: session.title,
+    },
+  });
+
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Study session skipped: ${session.title}`,
+    status: "completed",
+    payload: {
+      planId: plan._id.toString(),
+      sessionId: sessionId,
+      title: session.title,
+    },
+  });
+
   return { success: true, message: "Session marked as skipped." };
 }
 
-export async function proposeReschedule(studentId: string, planId: string, sessionId: string, newSession: StudySessionInput) {
+export async function proposeReschedule(
+  studentId: string,
+  planId: string,
+  sessionId: string,
+  newSession: StudySessionInput,
+) {
   await connectToDatabase();
   const plan = await StudyPlanModel.findById(planId);
   if (!plan) throw new Error("StudyPlan not found");
@@ -283,7 +402,10 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
   const session = plan.sessions.id(sessionId);
   if (!session) throw new Error("Session not found");
 
-  if (!validateTime(newSession.startTime) || !validateTime(newSession.endTime)) {
+  if (
+    !validateTime(newSession.startTime) ||
+    !validateTime(newSession.endTime)
+  ) {
     throw new Error("Invalid time format. Use HH:mm");
   }
   const [startH, startM] = newSession.startTime.split(":").map(Number);
@@ -299,7 +421,20 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
     rationale: "Automated reschedule based on skipped session.",
     payload: newSession,
     status: "pending",
-    planId: plan._id
+    planId: plan._id,
+  });
+
+  await AgentAuditLogModel.create({
+    agentType: "academic",
+    actorId: studentId,
+    actorRole: "student",
+    summary: `Proposed reschedule: ${newSession.title} on ${newSession.date}`,
+    status: "pending",
+    payload: {
+      actionId: agentAction._id.toString(),
+      planId: plan._id.toString(),
+      originalSessionId: sessionId,
+    },
   });
 
   return {
@@ -314,8 +449,8 @@ export async function proposeReschedule(studentId: string, planId: string, sessi
         date: newSession.date,
         startTime: newSession.startTime,
         endTime: newSession.endTime,
-        status: "planned"
-      }
-    ]
+        status: "planned",
+      },
+    ],
   };
 }

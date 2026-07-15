@@ -27,7 +27,7 @@ const StudentSchema = new Schema(
     skills: [{ type: String }],
     avatarInitials: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const TeacherSchema = new Schema(
@@ -54,18 +54,24 @@ const TeacherSchema = new Schema(
     specializations: [{ type: String }],
     avatarInitials: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const AdminSchema = new Schema(
   {
     username: { type: String, required: true, unique: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
     password: { type: String, required: true },
     name: { type: String, required: true },
     role: { type: String, default: "admin" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const TimetableSchema = new Schema(
@@ -102,7 +108,7 @@ const TimetableSchema = new Schema(
     notes: { type: String }, // Additional notes
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Create compound index for unique constraint
@@ -114,7 +120,7 @@ TimetableSchema.index(
     day: 1,
     timeSlot: 1,
   },
-  { unique: true }
+  { unique: true },
 );
 
 const AttendanceSchema = new Schema(
@@ -132,13 +138,13 @@ const AttendanceSchema = new Schema(
     timeSlot: { type: String }, // Optional: specific time slot
     remarks: { type: String }, // Optional: teacher notes
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Compound index for unique attendance record per student per class per date
 AttendanceSchema.index(
   { studentId: 1, teacherId: 1, className: 1, date: 1, subjectName: 1 },
-  { unique: true }
+  { unique: true },
 );
 
 const SectionSchema = new Schema(
@@ -150,7 +156,7 @@ const SectionSchema = new Schema(
     academicYear: { type: String, required: true },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Index for efficient querying
@@ -187,7 +193,7 @@ const EventSchema = new Schema(
     requirements: [{ type: String }],
     isPublic: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ResourceSchema = new Schema(
@@ -245,7 +251,7 @@ const ResourceSchema = new Schema(
     dueDate: { type: Date },
     totalBorrows: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const BookingSchema = new Schema(
@@ -290,7 +296,7 @@ const BookingSchema = new Schema(
     returnNotes: { type: String },
     returnedAt: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const InternshipSchema = new Schema(
@@ -341,7 +347,7 @@ const InternshipSchema = new Schema(
     isRemote: { type: Boolean, default: false },
     applicationCount: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const InternshipApplicationSchema = new Schema(
@@ -375,7 +381,7 @@ const InternshipApplicationSchema = new Schema(
     interviewVenue: { type: String },
     selectionNotes: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ClassroomSchema = new Schema(
@@ -407,7 +413,7 @@ const ClassroomSchema = new Schema(
     academicYear: { type: String },
     semester: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ClassroomEnrollmentSchema = new Schema(
@@ -429,7 +435,7 @@ const ClassroomEnrollmentSchema = new Schema(
     },
     enrolledBy: { type: String, default: "student" }, // "student" or "teacher"
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 StudentSchema.index({ email: 1 }, { unique: true });
@@ -449,7 +455,7 @@ InternshipSchema.index({ applicationDeadline: 1, status: 1 });
 InternshipSchema.index({ company: 1, category: 1 });
 InternshipApplicationSchema.index(
   { internshipId: 1, studentId: 1 },
-  { unique: true }
+  { unique: true },
 ); // Prevent duplicate applications
 InternshipApplicationSchema.index({ studentId: 1, applicationStatus: 1 });
 InternshipApplicationSchema.index({ internshipId: 1, applicationStatus: 1 });
@@ -463,7 +469,7 @@ ClassroomEnrollmentSchema.index({ classroomId: 1 });
 ClassroomEnrollmentSchema.index({ studentId: 1 });
 ClassroomEnrollmentSchema.index(
   { classroomId: 1, studentId: 1 },
-  { unique: true }
+  { unique: true },
 ); // Prevent duplicate enrollments
 
 export const StudentModel = models.Student || model("Student", StudentSchema);
@@ -488,13 +494,13 @@ const WeeklyScheduleSchema = new Schema(
   {
     timestamps: true,
     strict: false, // Allow any structure in weeklyData
-  }
+  },
 );
 
 // Unique index for teacher + classroom + week
 WeeklyScheduleSchema.index(
   { teacherId: 1, classroomId: 1, weekStartDate: 1 },
-  { unique: true }
+  { unique: true },
 );
 
 export const WeeklyScheduleModel =
@@ -504,7 +510,11 @@ export const WeeklyScheduleModel =
 const MaterialSchema = new Schema(
   {
     teacherId: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
-    classroomId: { type: Schema.Types.ObjectId, ref: "Classroom", required: true },
+    classroomId: {
+      type: Schema.Types.ObjectId,
+      ref: "Classroom",
+      required: true,
+    },
     title: { type: String, required: true },
     description: { type: String, required: true },
     fileName: { type: String, required: true },
@@ -516,7 +526,7 @@ const MaterialSchema = new Schema(
     downloadCount: { type: Number, default: 0 },
     tags: [{ type: String }], // Optional tags for categorization
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for efficient querying
@@ -553,17 +563,23 @@ const StudentFeesSchema = new Schema(
     totalFees: { type: Number, required: true },
     paidAmount: { type: Number, default: 0 },
     dueAmount: { type: Number, required: true },
-    paymentStatus: { type: String, enum: ["pending", "partial", "paid"], default: "pending" },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "partial", "paid"],
+      default: "pending",
+    },
     dueDateLimit: { type: Date, required: true },
-    paymentRecords: [{
-      amount: Number,
-      paymentDate: Date,
-      paymentMethod: { type: String, enum: ["online", "check", "cash"] },
-      transactionId: String,
-      reference: String,
-    }],
+    paymentRecords: [
+      {
+        amount: Number,
+        paymentDate: Date,
+        paymentMethod: { type: String, enum: ["online", "check", "cash"] },
+        transactionId: String,
+        reference: String,
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 StudentFeesSchema.index({ studentId: 1, semester: 1 });
@@ -584,7 +600,7 @@ const ExamHallTicketSchema = new Schema(
     instructions: [String],
     issuedDate: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 ExamHallTicketSchema.index({ studentId: 1, examDate: 1 });
@@ -596,21 +612,27 @@ const TranscriptSchema = new Schema(
     studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
     academicYear: { type: String, required: true },
     semester: { type: Number, required: true },
-    courses: [{
-      courseCode: String,
-      courseName: String,
-      credits: Number,
-      grade: String,
-      gpa: Number,
-      marks: Number,
-    }],
+    courses: [
+      {
+        courseCode: String,
+        courseName: String,
+        credits: Number,
+        grade: String,
+        gpa: Number,
+        marks: Number,
+      },
+    ],
     sgpa: { type: Number, required: true }, // Semester GPA
     cgpa: { type: Number, required: true }, // Cumulative GPA
     totalCreditsEarned: { type: Number, default: 0 },
-    status: { type: String, enum: ["active", "dismissed", "passed_out"], default: "active" },
+    status: {
+      type: String,
+      enum: ["active", "dismissed", "passed_out"],
+      default: "active",
+    },
     issuedDate: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 TranscriptSchema.index({ studentId: 1, academicYear: 1, semester: 1 });
@@ -622,7 +644,11 @@ const ExamResultSchema = new Schema(
     courseCode: { type: String, required: true },
     courseName: { type: String, required: true },
     semester: { type: Number, required: true },
-    examType: { type: String, enum: ["mid-term", "end-term", "practical", "continuous"], required: true },
+    examType: {
+      type: String,
+      enum: ["mid-term", "end-term", "practical", "continuous"],
+      required: true,
+    },
     totalMarks: { type: Number, required: true },
     marksObtained: { type: Number, required: true },
     grade: { type: String }, // A, B, C, D, F
@@ -632,7 +658,7 @@ const ExamResultSchema = new Schema(
     remarks: { type: String },
     publishedAt: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 ExamResultSchema.index({ studentId: 1, semester: 1 });
@@ -647,15 +673,27 @@ const AnnouncementSchema = new Schema(
     postedBy: { type: String, enum: ["admin", "teacher"], required: true },
     postedByName: { type: String, required: true },
     postedById: { type: Schema.Types.ObjectId, ref: "Teacher" },
-    category: { type: String, enum: ["academic", "events", "maintenance", "urgent", "general"], default: "general" },
-    targetAudience: { type: String, enum: ["all-students", "all-teachers", "all", "specific"], default: "all-students" },
-    priority: { type: String, enum: ["low", "normal", "high", "urgent"], default: "normal" },
+    category: {
+      type: String,
+      enum: ["academic", "events", "maintenance", "urgent", "general"],
+      default: "general",
+    },
+    targetAudience: {
+      type: String,
+      enum: ["all-students", "all-teachers", "all", "specific"],
+      default: "all-students",
+    },
+    priority: {
+      type: String,
+      enum: ["low", "normal", "high", "urgent"],
+      default: "normal",
+    },
     attachments: [{ fileName: String, fileUrl: String, uploadDate: Date }],
     expiryDate: { type: Date },
     isActive: { type: Boolean, default: true },
     viewCount: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 AnnouncementSchema.index({ category: 1, isActive: 1 });
@@ -686,10 +724,10 @@ const StudyPlanSchema = new Schema(
           enum: ["planned", "completed", "skipped"],
           default: "planned",
         },
-      }
+      },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const AgentActionSchema = new Schema(
@@ -707,7 +745,7 @@ const AgentActionSchema = new Schema(
     },
     planId: { type: Schema.Types.ObjectId, ref: "StudyPlan" }, // Reference to created plan if applicable
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const AssignmentSchema = new Schema(
@@ -717,10 +755,14 @@ const AssignmentSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String },
     dueDate: { type: Date, required: true },
-    status: { type: String, enum: ["pending", "submitted", "graded"], default: "pending" },
+    status: {
+      type: String,
+      enum: ["pending", "submitted", "graded"],
+      default: "pending",
+    },
     marks: { type: Number },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes
@@ -749,6 +791,47 @@ export const StudyPlanModel = model("StudyPlan", StudyPlanSchema);
 
 if (models.AgentAction) delete models.AgentAction;
 export const AgentActionModel = model("AgentAction", AgentActionSchema);
+
+// ── Agent Audit Log (Phase 3.12) ─────────────────────────────────────────────
+// Unified audit log for governance + orchestrator visibility.
+const AgentAuditLogSchema = new Schema(
+  {
+    agentType: {
+      type: String,
+      required: true,
+      enum: [
+        "academic",
+        "career",
+        "interview",
+        "research",
+        "project-mentor",
+        "teacher-copilot",
+        "orchestrator",
+      ],
+    },
+    actorId: { type: Schema.Types.ObjectId, required: true },
+    actorRole: { type: String, required: true },
+
+    summary: { type: String, required: true },
+    status: {
+      type: String,
+      required: true,
+      enum: ["pending", "approved", "rejected", "completed", "error"],
+      default: "pending",
+    },
+
+    payload: { type: Schema.Types.Mixed },
+    errorDetail: { type: String, default: null },
+  },
+  { timestamps: true },
+);
+
+AgentAuditLogSchema.index({ agentType: 1, createdAt: -1 });
+AgentAuditLogSchema.index({ actorId: 1, createdAt: -1 });
+AgentAuditLogSchema.index({ status: 1, agentType: 1, createdAt: -1 });
+
+export const AgentAuditLogModel =
+  models.AgentAuditLog || model("AgentAuditLog", AgentAuditLogSchema);
 
 if (models.Assignment) delete models.Assignment;
 export const AssignmentModel = model("Assignment", AssignmentSchema);

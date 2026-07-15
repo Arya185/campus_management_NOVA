@@ -1,20 +1,25 @@
 import OpenAI from "openai";
-import { 
-  getStudentTimetable, 
-  getAttendanceSummary, 
-  getUpcomingAssignments, 
+import {
+  getStudentTimetable,
+  getAttendanceSummary,
+  getUpcomingAssignments,
   proposeStudyPlan,
   getStudyPlans,
-  proposeReschedule
+  proposeReschedule,
 } from "./agent-tools";
 
-const OPENROUTER_BASE = process.env.OPENROUTER_API_BASE || "https://openrouter.ai/api/v1";
+
+
+const OPENROUTER_BASE =
+  process.env.OPENROUTER_API_BASE || "https://openrouter.ai/api/v1";
 // Use a robust tool-calling model as default if user hasn't overridden
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 
 export async function runAcademicAgent(studentId: string, prompt: string) {
   if (!process.env.OPENROUTER_API_KEY) {
-    throw new Error("OPENROUTER_API_KEY is missing. Agent requires an AI provider key.");
+    throw new Error(
+      "OPENROUTER_API_KEY is missing. Agent requires an AI provider key.",
+    );
   }
 
   const openai = new OpenAI({
@@ -27,35 +32,41 @@ export async function runAcademicAgent(studentId: string, prompt: string) {
       type: "function",
       function: {
         name: "getStudentTimetable",
-        description: "Get the student's weekly timetable to check for classes and free slots.",
-        parameters: { type: "object", properties: {}, required: [] }
-      }
+        description:
+          "Get the student's weekly timetable to check for classes and free slots.",
+        parameters: { type: "object", properties: {}, required: [] },
+      },
     },
     {
       type: "function",
       function: {
         name: "getAttendanceSummary",
-        description: "Get the student's attendance summary to check for subjects with low attendance (at-risk).",
-        parameters: { type: "object", properties: {}, required: [] }
-      }
+        description:
+          "Get the student's attendance summary to check for subjects with low attendance (at-risk).",
+        parameters: { type: "object", properties: {}, required: [] },
+      },
     },
     {
       type: "function",
       function: {
         name: "getUpcomingAssignments",
         description: "Get the student's upcoming assignments and deadlines.",
-        parameters: { type: "object", properties: {}, required: [] }
-      }
+        parameters: { type: "object", properties: {}, required: [] },
+      },
     },
     {
       type: "function",
       function: {
         name: "proposeStudyPlan",
-        description: "Propose a structured study plan. Gather academic context (timetable, attendance, assignments) BEFORE calling this. Use this when the user asks to plan their week or study schedule.",
+        description:
+          "Propose a structured study plan. Gather academic context (timetable, attendance, assignments) BEFORE calling this. Use this when the user asks to plan their week or study schedule.",
         parameters: {
           type: "object",
           properties: {
-            goal: { type: "string", description: "The overarching goal of the study plan." },
+            goal: {
+              type: "string",
+              description: "The overarching goal of the study plan.",
+            },
             sessions: {
               type: "array",
               items: {
@@ -66,29 +77,31 @@ export async function runAcademicAgent(studentId: string, prompt: string) {
                   startTime: { type: "string", description: "HH:mm" },
                   endTime: { type: "string", description: "HH:mm" },
                   subject: { type: "string" },
-                  topics: { type: "array", items: { type: "string" } }
+                  topics: { type: "array", items: { type: "string" } },
                 },
-                required: ["title", "date", "startTime", "endTime"]
-              }
-            }
+                required: ["title", "date", "startTime", "endTime"],
+              },
+            },
           },
-          required: ["goal", "sessions"]
-        }
-      }
+          required: ["goal", "sessions"],
+        },
+      },
     },
     {
       type: "function",
       function: {
         name: "getStudyPlans",
-        description: "Get the student's existing study plans and their sessions. Use this to find skipped sessions.",
-        parameters: { type: "object", properties: {}, required: [] }
-      }
+        description:
+          "Get the student's existing study plans and their sessions. Use this to find skipped sessions.",
+        parameters: { type: "object", properties: {}, required: [] },
+      },
     },
     {
       type: "function",
       function: {
         name: "proposeReschedule",
-        description: "Propose a rescheduled session for a skipped study session.",
+        description:
+          "Propose a rescheduled session for a skipped study session.",
         parameters: {
           type: "object",
           properties: {
@@ -102,15 +115,15 @@ export async function runAcademicAgent(studentId: string, prompt: string) {
                 startTime: { type: "string" },
                 endTime: { type: "string" },
                 subject: { type: "string" },
-                topics: { type: "array", items: { type: "string" } }
+                topics: { type: "array", items: { type: "string" } },
               },
-              required: ["title", "date", "startTime", "endTime"]
-            }
+              required: ["title", "date", "startTime", "endTime"],
+            },
           },
-          required: ["planId", "sessionId", "newSession"]
-        }
-      }
-    }
+          required: ["planId", "sessionId", "newSession"],
+        },
+      },
+    },
   ];
 
   const systemPrompt = `You are an Academic Success Agent.
@@ -124,7 +137,7 @@ Your role is to help the student with academic planning, scheduling, and risk ma
 
   const messages: any[] = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: prompt }
+    { role: "user", content: prompt },
   ];
 
   const activityLog: string[] = [];
@@ -136,7 +149,7 @@ Your role is to help the student with academic planning, scheduling, and risk ma
       model: OPENROUTER_MODEL,
       messages,
       tools,
-      tool_choice: "auto"
+      tool_choice: "auto",
     });
 
     const msg = response.choices[0].message;
@@ -150,8 +163,10 @@ Your role is to help the student with academic planning, scheduling, and risk ma
 
         const name = call.function.name;
         let args: any = {};
-        try { args = JSON.parse(call.function.arguments || "{}"); } catch(e) {}
-        
+        try {
+          args = JSON.parse(call.function.arguments || "{}");
+        } catch (e) {}
+
         let result: any;
         try {
           if (name === "getStudentTimetable") {
@@ -167,15 +182,27 @@ Your role is to help the student with academic planning, scheduling, and risk ma
             activityLog.push(`Proposed study plan`);
             const proposal = await proposeStudyPlan(studentId, args);
             proposedPlanDetails = proposal;
-            result = { success: true, message: "Plan successfully proposed and is pending approval." };
+            result = {
+              success: true,
+              message: "Plan successfully proposed and is pending approval.",
+            };
           } else if (name === "getStudyPlans") {
             activityLog.push("Checked study plans");
             result = await getStudyPlans(studentId);
           } else if (name === "proposeReschedule") {
             activityLog.push(`Proposed reschedule for session`);
-            const proposal = await proposeReschedule(studentId, args.planId, args.sessionId, args.newSession);
+            const proposal = await proposeReschedule(
+              studentId,
+              args.planId,
+              args.sessionId,
+              args.newSession,
+            );
             proposedPlanDetails = proposal;
-            result = { success: true, message: "Reschedule successfully proposed and is pending approval." };
+            result = {
+              success: true,
+              message:
+                "Reschedule successfully proposed and is pending approval.",
+            };
           } else {
             result = { error: "Unknown tool" };
           }
@@ -187,7 +214,7 @@ Your role is to help the student with academic planning, scheduling, and risk ma
           role: "tool",
           tool_call_id: call.id,
           name: name,
-          content: JSON.stringify(result)
+          content: JSON.stringify(result),
         });
       }
     } else {
@@ -197,15 +224,16 @@ Your role is to help the student with academic planning, scheduling, and risk ma
         activityLog,
         planId: proposedPlanDetails?.planId || null,
         actionId: proposedPlanDetails?.actionId || null,
-        sessions: proposedPlanDetails?.sessions || null
+        sessions: proposedPlanDetails?.sessions || null,
       };
     }
   }
 
   return {
-    reply: "I reached my maximum number of steps while trying to process this request.",
+    reply:
+      "I reached my maximum number of steps while trying to process this request.",
     activityLog,
     planId: proposedPlanDetails?.planId || null,
-    actionId: proposedPlanDetails?.actionId || null
+    actionId: proposedPlanDetails?.actionId || null,
   };
 }
