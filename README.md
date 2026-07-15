@@ -1,62 +1,175 @@
-# NOVA - Agentic AI Learning & Academic Success Platform
+# NOVA
 
-NOVA gives every student a personal **Academic Success Agent** that reads their real timetable, attendance, assignments, and workload; creates an adaptive plan; asks for approval before changing anything; and learns from completed or missed sessions to improve the next plan.
+Agentic AI learning and academic success platform for students, teachers, and admins.
 
----
+## What it does
 
-## 🎯 Overview
+NOVA centers on grounded student-facing AI workflows that read real app data, propose structured outputs, and require approval before mutating state.
 
-NOVA has evolved into a focused educational AI platform centered on flagship **Academic Success Agent**. Instead of disconnected tools for campus management, NOVA provides an intelligent, grounded agent that reasons over real academic data and helps students succeed through structured planning, reflection, and adaptation.
+Current student agent surfaces:
 
----
+- `Academic Success Agent` at `/student/agent`
+- `Career Roadmap` at `/student/career`
+- `Research Assistant` at `/student/research`
+- `Project Mentor` at `/student/project-mentor`
 
-## 🤖 Explanation of the AI Agent
+## Core agent flows
 
-The Academic Success Agent demonstrates a complete, grounded, agentic loop:
+### Academic Success Agent
 
-1. **Understand Goal**: The student provides a natural language goal (e.g., "Plan my exam week").
-2. **Read Real App State**: The agent uses deterministic **Read Tools** to pull the student's live timetable, attendance risk, and upcoming assignment deadlines from the database. It does NOT hallucinate classes or deadlines.
-3. **Plan**: The agent reasons over the data (e.g., identifying at-risk subjects) to formulate a structured study plan with specific sessions.
-4. **Propose Action**: The agent calls a **Write Tool** (`proposeStudyPlan`) which persists the plan and creates an `AgentAction` record.
-5. **Ask Approval**: Crucially, the agent **does not automatically activate changes**. The plan is presented to the user in a `pending_approval` state.
-6. **Act**: The user reviews the plan and clicks "Approve". Only then does the backend apply the mutation, syncing the study sessions to the active schedule.
-7. **Observe & Adapt (Reflection Loop)**: The student marks sessions as "Completed" or "Skipped". If a session is skipped, the agent detects this, finds the next available timetable window, and proposes a rescheduled session—asking for approval again.
+Reads timetable, attendance, and assignments. Proposes study plans. Student approves or rejects. Approved plans can be completed or skipped. Skipped sessions can trigger reschedule proposals.
 
-_All agent activity is transparently logged in an "Agent Activity" trace, but raw JSON and hidden reasoning are kept out of the user's view._
+### Career Roadmap
 
----
+Reads student profile, academic history, and prior roadmap memory. Proposes milestone-based career roadmap. Student approves or rejects pending roadmap.
 
-## 📹 Demo Flow
+### Research Assistant
 
-1. **Dashboard**: The student lands on their dashboard and opens the Agent Workspace.
-2. **Goal**: The student says, "Plan my exam week, prioritize Data Structures because I am at-risk."
-3. **Observation**: The UI shows the agent calling tools: `Checking timetable`, `Checking attendance`, `Checking upcoming assignments`.
-4. **Proposal**: A structured study plan appears, explicitly marked **Pending approval**.
-5. **Approval**: The student approves it. The plan is now active.
-6. **Reflection**: The student marks a session as **Skipped**. The agent proposes a rescheduled session, again requiring approval.
+Finds research sources for topic, summarizes response in chat, and lets student save session into `ResearchNote` records.
 
----
+### Project Mentor
 
-## 🏗️ Architecture & Tech Stack
+Reads existing projects, proposes milestone plans for new project work, and supports milestone updates. New project plans now enter pending approval flow before becoming active.
 
-**Frontend:**
+## Tech stack
 
-- **Framework**: Next.js 15 (App Router)
-- **UI & Styling**: React 19, Tailwind CSS, Radix UI primitives, shadcn/ui
-- **Language**: TypeScript
+- `Next.js 15` App Router
+- `React 19`
+- `TypeScript`
+- `Tailwind CSS`
+- `Radix UI` + `shadcn/ui`
+- `MongoDB` + `Mongoose`
+- `NextAuth.js v4`
+- `OpenRouter / OpenAI-compatible tool calling`
+- `Flask` ML service in `apps/ml-api`
 
-**Backend & Services:**
+## Repo layout
 
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: NextAuth.js v4 (Role-based: Student, Teacher, Admin)
-- **AI Integration**: OpenRouter / OpenAI API for tool-calling LLM orchestration
+```text
+apps/
+  web/
+    app/
+      api/
+        student/
+          agent/
+          career-agent/
+          research-agent/
+          project-mentor/
+          orchestrator/
+      student/
+        agent/
+        career/
+        research/
+        project-mentor/
+    lib/
+      academic-agent.ts
+      career-agent.ts
+      research-agent.ts
+      project-agent.ts
+      agent-tools.ts
+      models.ts
+  ml-api/
+docs/
+```
 
----
-
-## 🚀 Getting Started
+## Setup
 
 ### Prerequisites
 
-- **Node.js**: v18 or higher
-- **pnpm**: v9 or higher
+- `Node.js >= 18`
+- `pnpm`
+- running MongoDB instance
+- OpenRouter-compatible API key for agent flows
 
+### Environment
+
+Copy root example file into web app env file:
+
+```bash
+cp .env.example apps/web/.env.local
+```
+
+Minimum required values:
+
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `OPENROUTER_API_KEY`
+
+Common optional values:
+
+- `OPENROUTER_API_BASE`
+- `OPENROUTER_MODEL`
+- `PERFORMANCE_PREDICTOR_API_URL`
+
+## Run locally
+
+Install dependencies:
+
+```bash
+pnpm -C apps/web install
+```
+
+Seed demo data:
+
+```bash
+pnpm -C apps/web seed:demo
+```
+
+Start web app:
+
+```bash
+pnpm -C apps/web dev
+```
+
+Start ML API separately if needed:
+
+```bash
+cd apps/ml-api
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+## Important student API routes
+
+- `POST /api/student/agent`
+- `POST /api/student/agent/action`
+- `POST /api/student/agent/session`
+- `POST /api/student/career-agent`
+- `POST /api/student/career-agent/action`
+- `POST /api/student/research-agent`
+- `POST /api/student/research-agent/save`
+- `POST /api/student/project-mentor`
+- `POST /api/student/project-mentor/action`
+
+All student mutation routes derive acting student from `getServerSession`. Client does not supply student id.
+
+## Data models used by agent flows
+
+- `StudyPlan`
+- `AgentAction`
+- `CareerRoadmap`
+- `ResearchNote`
+- `Project`
+
+## Notes
+
+- `Research Assistant` save path reuses existing persistence logic through `saveResearchNote`.
+- `Career Roadmap` and `Project Mentor` now both have dedicated approval routes instead of relying only on orchestrator path.
+- Sidebar groups student AI entries under single `AI Agents` section.
+
+## Verification
+
+Latest local verification after agent UI/API updates:
+
+- `pnpm -C apps/web exec tsc --noEmit` passes
+- `pnpm -C apps/web lint` does not pass repo-wide because of pre-existing unrelated lint errors, including `apps/web/app/page.tsx`
+
+## Docs
+
+- Product/design direction: [docs/Design.md](docs/Design.md)
+- project rules: [docs/Rules.md](docs/Rules.md)
+- phase notes: [docs/Phases.md](docs/Phases.md)
